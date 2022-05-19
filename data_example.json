@@ -1,0 +1,23 @@
+[
+    {
+        "price": 10840.04,
+        "date": "2020-03-09",
+        "quantity": 1,
+        "asset": "BTC",
+        "asset_price": 10840.04
+    },
+    {
+        "price": 8560.95,
+        "date": "2020-03-19",
+        "quantity": 1,
+        "asset": "BTC",
+        "asset_price": 8560.95
+    },
+    {
+        "price": 246.53,
+        "date": "2020-04-07",
+        "quantity": 1,
+        "asset": "ETH",
+        "asset_price": 246.53
+    }
+]

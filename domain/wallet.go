@@ -1,14 +1,14 @@
 package domain
 
 type Wallet struct {
-	transactions []Transaction
+	Transactions []Transaction
 }
 
 func (w Wallet) filterByAsset(asset string) ([]Transaction) {
 	filtered := []Transaction{}
 
-	for _, transaction := range w.transactions {
-		if transaction.asset == asset {
+	for _, transaction := range w.Transactions {
+		if transaction.Asset == asset {
 			filtered = append(filtered, transaction)
 		}
 	}
