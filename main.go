@@ -53,13 +53,13 @@ func main() {
 		}
 
 		render += fmt.Sprintf(
-			`| %s | %s | %s | %s | %s | %s |`,
+			`| %s | %s | %s | %s | %s | %s%% |`,
 			transaction.Asset,
 			formatFloat(transaction.Quantity),
 			formatFloat(transaction.AssetPrice),
 			formatFloat(transaction.Price),
 			formatFloat(price),
-			"0%",
+			formatFloat(transaction.GetProfit(price)),
 		)
 		render += "\n"
 	}
