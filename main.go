@@ -16,10 +16,6 @@ func formatFloat(numb float64) string {
 	return strconv.FormatFloat(numb, 'g', -1, 64)
 }
 
-func formatStringForRendering(str string) string {
-	return strings.ReplaceAll(str, "\t", "")
-}
-
 func main() {
 	// load .env file
 	err := godotenv.Load(".env")
