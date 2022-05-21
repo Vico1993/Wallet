@@ -1,20 +1,32 @@
 package service
 
 import (
-	"log"
+	"errors"
 	"os"
 
 	cmc "github.com/miguelmota/go-coinmarketcap/pro/v1"
 )
 
-func GetAssetPrice(asset string) {
+var (
+	prices = map[string]float64{}
+)
+
+func GetAssetPrice(asset string) (float64, error) {
+	// To avoid hitting CMC during development
+	// @todo: Need to remove this check
+	if os.Getenv("DEBUG") == "1" {
+		prices["BTC"] = 50000.19
+		prices["ETH"] = 500.19
+		prices["VET"] = 0.19
+	}
+
+	if val, ok := prices[asset]; ok {
+		return val, nil
+	}
+
 	client := cmc.NewClient(&cmc.Config{
 		ProAPIKey: os.Getenv("CMC_API_KEY"),
 	})
-
-	// crypto, err := client.Cryptocurrency.Info(&cmc.InfoOptions{
-	// 	Symbol: asset,
-	// })
 
 	quotes, err := client.Cryptocurrency.LatestQuotes(&cmc.QuoteOptions{
 		Convert: "CAD",
@@ -22,14 +34,15 @@ func GetAssetPrice(asset string) {
 	})
 
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
-	// fmt.Println(quotes)
-
-	for _, v := range quotes {
-		log.Fatal(v.Quote["CAD"].Price)
+	// If no price return
+	if len(quotes) == 0 {
+		return 0, errors.New("No price found for the Asset: " + asset)
 	}
 
-	// return price
+	prices[asset] = quotes[0].Quote["CAD"].Price
+
+	return prices[asset], nil
 }

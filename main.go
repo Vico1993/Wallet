@@ -22,10 +22,12 @@ func main() {
 	fmt.Printf("Number of Transactions: %s\n", strconv.Itoa(len(wallet.Transactions)))
 
 	for _, transaction := range wallet.Transactions {
-		fmt.Println(transaction.Asset)
-		// fmt.Println(service.GetAssetPrice(transaction.Asset))
+		price, err := service.GetAssetPrice(transaction.Asset)
+		if err != nil {
+			log.Fatalln(transaction.Asset, "---" , err)
+		}
 
-		service.GetAssetPrice(transaction.Asset)
+		fmt.Println("New price for ", transaction.Asset, "is: ", strconv.FormatFloat(price, 'g', -1, 64))
 
 		// fmt.Printf(
 		// 	"%s: You bough %s, at %s. Now it's %s\n",
