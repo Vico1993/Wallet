@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Vico1993/Wallet/domain"
 	"Vico1993/Wallet/service"
 	"fmt"
 	"log"
@@ -11,6 +12,11 @@ import (
 	"github.com/charmbracelet/glamour"
 	"github.com/joho/godotenv"
 )
+
+var stats = domain.Statistic{
+	TotalInvest: 0,
+	ActualValue: 0,
+}
 
 func formatFloat(numb float64) string {
 	return strconv.FormatFloat(numb, 'g', -1, 64)
@@ -55,6 +61,9 @@ func main() {
 			assetPrice = transaction.AssetPrice
 		}
 
+		stats.TotalInvest += transaction.Price
+		stats.ActualValue += transaction.Quantity * price
+
 		render += fmt.Sprintf(
 			`| %s | %s | %s | %s | %s | %s%% |`,
 			transaction.Asset,
@@ -66,6 +75,13 @@ func main() {
 		)
 		render += "\n"
 	}
+
+	render += "\n"
+	render += fmt.Sprintf(
+		"## You invest in total: %s and your total profit is: %s%%",
+		formatFloat(stats.TotalInvest),
+		formatFloat(stats.GetTotalProfit()),
+	)
 
 	r, _ := glamour.NewTermRenderer(
 		// detect background color and pick either the default dark or light theme
