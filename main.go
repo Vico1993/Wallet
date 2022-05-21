@@ -5,9 +5,20 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
+	"time"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/joho/godotenv"
 )
+
+func formatFloat(numb float64) string {
+	return strconv.FormatFloat(numb, 'g', -1, 64)
+}
+
+func formatStringForRendering(str string) string {
+	return strings.ReplaceAll(str, "\t", "")
+}
 
 func main() {
 	// load .env file
@@ -18,8 +29,22 @@ func main() {
 	}
 
 	wallet := GetData()
+	today := time.Now()
 
-	fmt.Printf("Number of Transactions: %s\n", strconv.Itoa(len(wallet.Transactions)))
+	render := fmt.Sprintf(
+		`# Wallet
+		_At %s_ `,
+		today.Local().Format("2006-01-02 15:04:05"),
+	)
+
+	render += fmt.Sprintf("We found %s number of transaction in your wallet, here is a small Summary:", strconv.Itoa(len(wallet.Transactions)))
+
+	render += "\n"
+	render += fmt.Sprintf(
+		`| Asset |  Quantity  |  By at   | By for | Price today | Profit |
+		| :---: | :--------: | :------: | :----: | :---------: | :----: |`,
+	)
+	render += "\n"
 
 	for _, transaction := range wallet.Transactions {
 		price, err := service.GetAssetPrice(transaction.Asset)
@@ -27,14 +52,25 @@ func main() {
 			log.Fatalln(transaction.Asset, "---" , err)
 		}
 
-		fmt.Println("New price for ", transaction.Asset, "is: ", strconv.FormatFloat(price, 'g', -1, 64))
-
-		// fmt.Printf(
-		// 	"%s: You bough %s, at %s. Now it's %s\n",
-		// 	transaction.Date,
-		// 	transaction.Asset,
-		// 	strconv.FormatFloat(transaction.AssetPrice, 'g', -1, 64),
-		// 	strconv.FormatFloat(service.GetAssetPrice(transaction.Asset), 'g', -1, 64),
-		// )
+		render += fmt.Sprintf(
+			`| %s | %s | %s | %s | %s | %s |`,
+			transaction.Asset,
+			formatFloat(transaction.Quantity),
+			formatFloat(transaction.AssetPrice),
+			formatFloat(transaction.Price),
+			formatFloat(price),
+			"0%",
+		)
+		render += "\n"
 	}
+
+	out, err := glamour.Render(
+		strings.ReplaceAll(render, "\t", ""),
+		"dark",
+	)
+
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Print(out)
 }
