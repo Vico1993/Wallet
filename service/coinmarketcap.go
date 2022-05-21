@@ -18,6 +18,10 @@ func GetAssetPrice(asset string) (float64, error) {
 		prices["BTC"] = 50000.19
 		prices["ETH"] = 500.19
 		prices["VET"] = 0.19
+		prices["DOGE"] = 0.1
+		prices["BUSD"] = 1
+		prices["MANA"] = 0.4
+		prices["EGLD"] = 100
 	}
 
 	if val, ok := prices[asset]; ok {

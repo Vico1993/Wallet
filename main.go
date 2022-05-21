@@ -37,7 +37,7 @@ func main() {
 
 	render += "\n"
 	render += fmt.Sprintf(
-		`| Asset |  Quantity  |  By at   | By for | Price today | Profit |
+		`| Asset |  Quantity  |  By at   | By for (CAD) | Price today | Profit |
 		| :---: | :--------: | :------: | :----: | :---------: | :----: |`,
 	)
 	render += "\n"
@@ -48,11 +48,18 @@ func main() {
 			log.Fatalln(transaction.Asset, "---" , err)
 		}
 
+		var assetPrice float64
+		if assetPrice == 0 {
+			assetPrice = transaction.GetAssetPrice()
+		} else {
+			assetPrice = transaction.AssetPrice
+		}
+
 		render += fmt.Sprintf(
 			`| %s | %s | %s | %s | %s | %s%% |`,
 			transaction.Asset,
 			formatFloat(transaction.Quantity),
-			formatFloat(transaction.AssetPrice),
+			formatFloat(assetPrice),
 			formatFloat(transaction.Price),
 			formatFloat(price),
 			formatFloat(transaction.GetProfit(price)),
@@ -60,9 +67,15 @@ func main() {
 		render += "\n"
 	}
 
-	out, err := glamour.Render(
+	r, _ := glamour.NewTermRenderer(
+		// detect background color and pick either the default dark or light theme
+		glamour.WithAutoStyle(),
+		// wrap output at specific width
+		glamour.WithWordWrap(100),
+	)
+
+	out, err := r.Render(
 		strings.ReplaceAll(render, "\t", ""),
-		"dark",
 	)
 
 	if err != nil {
