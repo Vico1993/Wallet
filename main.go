@@ -39,14 +39,12 @@ func main() {
 		today.Local().Format("2006-01-02 15:04:05"),
 	)
 
-	render += fmt.Sprintf("We found %s number of transaction in your wallet, here is a small Summary:", strconv.Itoa(len(wallet.Transactions)))
+	render += fmt.Sprintf("We found %s number of transaction in your wallet, here is a small Summary: \n", strconv.Itoa(len(wallet.Transactions)))
 
-	render += "\n"
-	render += fmt.Sprintf(
+	render += fmt.Sprintln(
 		`| Asset |  Quantity  |  By at   | By for (CAD) | Price today | Profit |
 		| :---: | :--------: | :------: | :----: | :---------: | :----: |`,
 	)
-	render += "\n"
 
 	for _, transaction := range wallet.Transactions {
 		price, err := service.GetAssetPrice(transaction.Asset)
@@ -65,7 +63,7 @@ func main() {
 		stats.ActualValue += transaction.Quantity * price
 
 		render += fmt.Sprintf(
-			`| %s | %s | %s | %s | %s | %s%% |`,
+			`| %s | %s | %s | %s | %s | %s%% |` + "\n",
 			transaction.Asset,
 			formatFloat(transaction.Quantity),
 			formatFloat(assetPrice),
@@ -73,12 +71,10 @@ func main() {
 			formatFloat(price),
 			formatFloat(transaction.GetProfit(price)),
 		)
-		render += "\n"
 	}
 
-	render += "\n"
 	render += fmt.Sprintf(
-		"## You invest in total: %s and your total profit is: %s%%",
+		"\n ## You invest in total: %s and your total profit is: %s%%",
 		formatFloat(stats.TotalInvest),
 		formatFloat(stats.GetTotalProfit()),
 	)
