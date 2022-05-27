@@ -13,10 +13,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var stats = domain.Statistic{
-	TotalInvest: 0,
-	ActualValue: 0,
-}
+var stats = domain.Statistic{}
 
 func formatFloat(numb float64) string {
 	return strconv.FormatFloat(numb, 'g', -1, 64)
@@ -52,21 +49,17 @@ func main() {
 			log.Fatalln(transaction.Asset, "---" , err)
 		}
 
-		var assetPrice float64
-		if assetPrice == 0 {
-			assetPrice = transaction.GetAssetPrice()
-		} else {
-			assetPrice = transaction.AssetPrice
-		}
-
-		stats.TotalInvest += transaction.Price
-		stats.ActualValue += transaction.Quantity * price
+		stats.AddInvest(
+			transaction.Asset,
+			transaction.Price,
+			transaction.Quantity * price,
+		)
 
 		render += fmt.Sprintf(
 			`| %s | %s | %s | %s | %s | %s%% |` + "\n",
 			transaction.Asset,
 			formatFloat(transaction.Quantity),
-			formatFloat(assetPrice),
+			formatFloat(transaction.GetAssetPrice()),
 			formatFloat(transaction.Price),
 			formatFloat(price),
 			formatFloat(transaction.GetProfit(price)),
@@ -75,9 +68,24 @@ func main() {
 
 	render += fmt.Sprintf(
 		"\n ## You invest in total: %s and your total profit is: %s%%",
-		formatFloat(stats.TotalInvest),
+		formatFloat(stats.GetTotalInvest()),
 		formatFloat(stats.GetTotalProfit()),
 	)
+
+	render += fmt.Sprintln("\n# Top Crypto")
+
+	render += fmt.Sprintln(
+		`| Symbol | Profit |
+		| :---: | :--------: |`,
+	)
+
+	for _, value := range stats.GetDetails() {
+		render += fmt.Sprintf(
+			`| %s | %s%% |` + "\n",
+			value.Symbol,
+			formatFloat(value.Profit),
+		)
+	}
 
 	r, _ := glamour.NewTermRenderer(
 		// detect background color and pick either the default dark or light theme
