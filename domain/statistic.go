@@ -1,12 +1,11 @@
 package domain
 
 import (
-	"fmt"
 	"math"
 	"sort"
 )
 
-type profit struct {
+type dStatistic struct {
 	invest float64
 	value float64
 }
@@ -14,7 +13,7 @@ type profit struct {
 type Statistic struct {
 	invest float64
 	value float64
-	details map[string]profit
+	details map[string]dStatistic
 }
 
 func calculProfit (startValue float64, endValue float64) (float64) {
@@ -29,7 +28,7 @@ func (s *Statistic) AddInvest(symbol string, invest float64, value float64) {
 
 	// Initialisation of the map
 	if (s.details == nil) {
-		s.details = make(map[string]profit)
+		s.details = make(map[string]dStatistic)
 	}
 
 	if entry, ok := s.details[symbol]; ok {
@@ -38,7 +37,7 @@ func (s *Statistic) AddInvest(symbol string, invest float64, value float64) {
 
 		s.details[symbol] = entry
 	} else {
-		s.details[symbol] = profit{
+		s.details[symbol] = dStatistic{
 			invest: invest,
 			value: value,
 		}
@@ -50,8 +49,6 @@ func (s Statistic) GetTotalProfit() (float64) {
 }
 
 func (s Statistic) GetTotalInvest() (float64) {
-	fmt.Println(s.invest)
-
 	return s.invest
 }
 
