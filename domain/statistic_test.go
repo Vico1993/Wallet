@@ -1,6 +1,9 @@
 package domain
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestCalculProfit(t *testing.T) {
 	type input struct {
@@ -147,49 +150,65 @@ func TestAddInvest(t *testing.T) {
 	}
 }
 
-// func TestGetDetails(t *testing.T) {
-// 	// type input struct {
-// 	// 	symbol 	string
-// 	// 	invest 	float64
-// 	// 	value 	float64
-// 	// }
+func TestGetDetails(t *testing.T) {
+	type input struct {
+		symbol 	string
+		invest 	float64
+		value 	float64
+	}
 
-// 	table := []struct {
-// 		input 		Statistic
-// 		expected 	Details
-// 	} {
-// 		{
-// 			input: Statistic{
-// 				details: append(
-// 					make([]dStatistic, 3),
-// 					dStatistic{
-// 						symbol: "BTC",
-// 						invest: 10,
-// 						value: 50,
-// 					},
-// 					dStatistic{
-// 						symbol: "BTC",
-// 						invest: 100,
-// 						value: 50,
-// 					},
-// 					dStatistic{
-// 						symbol: "ETH",
-// 						invest: 10,
-// 						value: 100,
-// 					},
-// 				),
-// 			},
-// 			expected: append(
-// 				make([]Details, 2),
-// 				Details{
-// 					Symbol: "ETH",
-// 					Profit: 90,
-// 				},
-// 				Details{
-// 					Symbol: "BTC",
-// 					Profit: -10,
-// 				},
-// 			),
-// 		},
-// 	}
-// }
+	table := []struct {
+		input 		[]input
+		expected 	[]Details
+	} {
+		{
+			input: 	[]input{
+				{
+					invest: 100,
+					value: 50,
+					symbol: "BTC",
+				},
+				{
+					invest: 100,
+					value: 50,
+					symbol: "BTC",
+				},
+				{
+					invest: 10,
+					value: 100,
+					symbol: "ETH",
+				},
+			},
+			expected: []Details {
+				{
+					Symbol: "ETH",
+					Profit: 900,
+				},
+				{
+					Symbol: "BTC",
+					Profit: -50,
+				},
+			},
+		},
+	}
+
+	for _, test := range table {
+		var stats = Statistic{}
+
+		for _, i := range test.input {
+			stats.AddInvest(i.symbol, i.invest, i.value)
+		}
+
+		if !reflect.DeepEqual(stats.GetDetails(), test.expected) {
+			t.Error(
+				"getDetails return incorrect value than expected",
+				"\nGetDetails Value:\n",
+				stats.GetDetails(),
+				"\nInput:\n",
+				test.input,
+				"\nExpected:\n",
+				test.expected,
+			)
+		}
+	}
+}

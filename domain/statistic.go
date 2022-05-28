@@ -33,7 +33,7 @@ func (s *Statistic) AddInvest(symbol string, invest float64, value float64) {
 
 	if entry, ok := s.details[symbol]; ok {
 		entry.invest += invest
-		entry.value += invest
+		entry.value += value
 
 		s.details[symbol] = entry
 	} else {
