@@ -4,6 +4,10 @@ import (
 	"Vico1993/Wallet/domain"
 	"encoding/json"
 	"io/ioutil"
+	"log"
+	"os"
+
+	"github.com/spf13/viper"
 )
 
 // For now the data will come from a json in the root of the project.
@@ -19,4 +23,38 @@ func GetData() (domain.Wallet) {
 	return domain.Wallet{
 		Transactions: transactions,
 	}
+}
+
+// Temp for now and see how it goes.
+func InitConfig () {
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		homedir = "./"
+	}
+
+	path := homedir + "/.wallet"
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err = os.MkdirAll(path, 0755)
+		if err != nil {
+			log.Fatal("Can't create Folder at " + path)
+		}
+	}
+
+	configFilePath := path +  "/config.json"
+
+	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
+		var file, err = os.Create(configFilePath)
+        if err != nil {
+            log.Fatal("Can't create config file at " + configFilePath)
+        }
+        defer file.Close()
+	}
+
+	viper.SetConfigFile(configFilePath)
+
+	// err = viper.ReadInConfig()
+	// if err != nil {
+	// 	log.Fatal("Fatal error config file: %w \n", err)
+	// }
 }
