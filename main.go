@@ -17,7 +17,11 @@ import (
 var stats = domain.Statistic{}
 
 func formatFloat(numb float64) string {
-	numb = math.Floor(numb * 100) / 100
+	round := math.Floor(numb * 100) / 100
+
+	if round != 0 {
+		numb = round
+	}
 
 	return strconv.FormatFloat(numb, 'g', -1, 64)
 }
