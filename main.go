@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Vico1993/Wallet/config"
 	"Vico1993/Wallet/domain"
 	"Vico1993/Wallet/service"
 	"fmt"
@@ -27,6 +28,9 @@ func formatFloat(numb float64) string {
 }
 
 func main() {
+	// Create a home directory to save some basic information
+	config.InitConfig()
+
 	// load .env file
 	err := godotenv.Load(".env")
 
