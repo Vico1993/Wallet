@@ -5,6 +5,7 @@ import (
 	"Vico1993/Wallet/service"
 	"fmt"
 	"log"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -16,6 +17,8 @@ import (
 var stats = domain.Statistic{}
 
 func formatFloat(numb float64) string {
+	numb = math.Floor(numb * 100) / 100
+
 	return strconv.FormatFloat(numb, 'g', -1, 64)
 }
 
@@ -30,6 +33,7 @@ func main() {
 	wallet := GetData()
 	today := time.Now()
 
+	// @todo: Move this into a builder
 	render := fmt.Sprintf(
 		`# Wallet
 		_At %s_ `,
