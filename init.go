@@ -49,12 +49,18 @@ func InitConfig () {
             log.Fatal("Can't create config file at " + configFilePath)
         }
         defer file.Close()
+
+		// initialisation of the JSON string
+		_, err = file.WriteString("{}")
+		if err != nil {
+            log.Fatal("Can't initiate JSON config file " + err.Error())
+        }
 	}
 
 	viper.SetConfigFile(configFilePath)
 
-	// err = viper.ReadInConfig()
-	// if err != nil {
-	// 	log.Fatal("Fatal error config file: %w \n", err)
-	// }
+	err = viper.ReadInConfig()
+	if err != nil {
+		log.Fatal("Fatal error config file: %w \n", err)
+	}
 }

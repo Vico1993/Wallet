@@ -12,9 +12,12 @@ import (
 
 	"github.com/charmbracelet/glamour"
 	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 )
 
 var stats = domain.Statistic{}
+var today = time.Now().Local().Format("2006-01-02 15:04:05")
+var v = viper.GetViper()
 
 func formatFloat(numb float64) string {
 	round := math.Floor(numb * 100) / 100
@@ -24,6 +27,23 @@ func formatFloat(numb float64) string {
 	}
 
 	return strconv.FormatFloat(numb, 'g', -1, 64)
+}
+
+func saveResults(p float64) {
+	fmt.Println("HERE", v.GetStringSlice("previous_result"))
+
+	v.Set(
+		"previous_result",
+		append(
+			v.GetStringSlice("previous_result"),
+			today + " - " + formatFloat(p) + "%",
+		),
+	)
+
+	err := v.WriteConfig()
+	if err != nil {
+		log.Fatalln("Error saving profit")
+	}
 }
 
 func main() {
@@ -38,13 +58,12 @@ func main() {
 	}
 
 	wallet := GetData()
-	today := time.Now()
 
 	// @todo: Move this into a builder
 	render := fmt.Sprintf(
 		`# Wallet
 		_At %s_ `,
-		today.Local().Format("2006-01-02 15:04:05"),
+		today,
 	)
 
 	render += fmt.Sprintf("We found %s number of transaction in your wallet, here is a small Summary: \n", strconv.Itoa(len(wallet.Transactions)))
@@ -82,6 +101,9 @@ func main() {
 		formatFloat(stats.GetTotalInvest()),
 		formatFloat(stats.GetTotalProfit()),
 	)
+
+	// Save result for later
+	saveResults(stats.GetTotalProfit())
 
 	render += fmt.Sprintln("\n# Top Crypto")
 
