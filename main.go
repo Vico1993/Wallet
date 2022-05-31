@@ -6,6 +6,7 @@ import (
 	"Vico1993/Wallet/util"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -91,7 +92,9 @@ func main() {
 	)
 
 	// Save result for later
-	saveResults(stats.GetTotalProfit())
+	if os.Getenv("DEBUG") == "0" {
+		saveResults(stats.GetTotalProfit())
+	}
 
 	render += fmt.Sprintln("\n# Top Crypto")
 
