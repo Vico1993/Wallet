@@ -30,8 +30,6 @@ func formatFloat(numb float64) string {
 }
 
 func saveResults(p float64) {
-	fmt.Println("HERE", v.GetStringSlice("previous_result"))
-
 	v.Set(
 		"previous_result",
 		append(
