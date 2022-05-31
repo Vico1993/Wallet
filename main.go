@@ -3,9 +3,9 @@ package main
 import (
 	"Vico1993/Wallet/domain"
 	"Vico1993/Wallet/service"
+	"Vico1993/Wallet/util"
 	"fmt"
 	"log"
-	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -19,22 +19,12 @@ var stats = domain.Statistic{}
 var today = time.Now().Local().Format("2006-01-02 15:04:05")
 var v = viper.GetViper()
 
-func formatFloat(numb float64) string {
-	round := math.Floor(numb * 100) / 100
-
-	if round != 0 {
-		numb = round
-	}
-
-	return strconv.FormatFloat(numb, 'g', -1, 64)
-}
-
 func saveResults(p float64) {
 	v.Set(
 		"previous_result",
 		append(
 			v.GetStringSlice("previous_result"),
-			today + " - " + formatFloat(p) + "%",
+			today + " - " + util.FormatFloat(p) + "%",
 		),
 	)
 
@@ -60,7 +50,7 @@ func main() {
 	// @todo: Move this into a builder
 	render := fmt.Sprintf(
 		`# Wallet
-		_At %s_ `,
+		__At %s__ `,
 		today,
 	)
 
@@ -86,18 +76,18 @@ func main() {
 		render += fmt.Sprintf(
 			`| %s | %s | %s | %s | %s | %s%% |` + "\n",
 			transaction.Asset,
-			formatFloat(transaction.Quantity),
-			formatFloat(transaction.GetAssetPrice()),
-			formatFloat(transaction.Price),
-			formatFloat(price),
-			formatFloat(transaction.GetProfit(price)),
+			util.FormatFloat(transaction.Quantity),
+			util.FormatFloat(transaction.GetAssetPrice()),
+			util.FormatFloat(transaction.Price),
+			util.FormatFloat(price),
+			util.FormatFloat(transaction.GetProfit(price)),
 		)
 	}
 
 	render += fmt.Sprintf(
 		"\n ## You invest in total: %s and your total profit is: %s%%",
-		formatFloat(stats.GetTotalInvest()),
-		formatFloat(stats.GetTotalProfit()),
+		util.FormatFloat(stats.GetTotalInvest()),
+		util.FormatFloat(stats.GetTotalProfit()),
 	)
 
 	// Save result for later
@@ -114,7 +104,7 @@ func main() {
 		render += fmt.Sprintf(
 			`| %s | %s%% |` + "\n",
 			value.Symbol,
-			formatFloat(value.Profit),
+			util.FormatFloat(value.Profit),
 		)
 	}
 
