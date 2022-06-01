@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Vico1993/Wallet/builder"
 	"Vico1993/Wallet/domain"
 	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
@@ -84,7 +85,6 @@ func main() {
 			util.FormatFloat(transaction.GetProfit(price)),
 		)
 	}
-
 	render += fmt.Sprintf(
 		"\n ## You invest in total: %s and your total profit is: %s%%",
 		util.FormatFloat(stats.GetTotalInvest()),
@@ -98,18 +98,25 @@ func main() {
 
 	render += fmt.Sprintln("\n# Top Crypto")
 
-	render += fmt.Sprintln(
-		`| Symbol | Profit |
-		| :---: | :--------: |`,
-	)
-
-	for _, value := range stats.GetDetails() {
-		render += fmt.Sprintf(
-			`| %s | %s%% |` + "\n",
-			value.Symbol,
-			util.FormatFloat(value.Profit),
+	var details [][]string
+	for _, detail := range stats.GetDetails() {
+		details = append(details, []string{
+			detail.Symbol,
+			util.FormatFloat(detail.Profit),
+			},
 		)
 	}
+
+	tableStr, err := builder.NewMarkDowTable(
+		[]string{"Symbol", "Profit"},
+		details,
+	).Render()
+
+	if err != nil {
+		log.Fatalln("Error building the Table", err.Error())
+	}
+
+	render += tableStr
 
 	r, _ := glamour.NewTermRenderer(
 		// detect background color and pick either the default dark or light theme
