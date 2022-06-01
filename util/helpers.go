@@ -14,3 +14,13 @@ func FormatFloat(numb float64) string {
 
 	return strconv.FormatFloat(numb, 'g', -1, 64)
 }
+
+// @todo: Add test
+func IsInStringSlice(a string, list []string) bool {
+	for _, b := range list {
+        if b == a {
+            return true
+        }
+    }
+    return false
+}

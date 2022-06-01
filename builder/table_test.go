@@ -44,7 +44,7 @@ func TestRenderTable(t *testing.T) {
 
 		result, err := tableMkd.Render()
 
-		if err != test.err || result != test.expected {
+		if err != test.err && result != test.expected {
 			t.Error(
 				"Error trying to render a Table",
 				"Input:",
