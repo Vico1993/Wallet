@@ -58,11 +58,7 @@ func main() {
 
 	render += fmt.Sprintf("We found %s number of transaction in your wallet, here is a small Summary: \n", strconv.Itoa(len(wallet.Transactions)))
 
-	render += fmt.Sprintln(
-		`| Asset |  Quantity  |  By at   | By for (CAD) | Price today | Profit |
-		| :---: | :--------: | :------: | :----: | :---------: | :----: |`,
-	)
-
+	var transactions [][]string
 	for _, transaction := range wallet.Transactions {
 		price, err := service.GetAssetPrice(transaction.Asset)
 		if err != nil {
@@ -75,16 +71,27 @@ func main() {
 			transaction.Quantity * price,
 		)
 
-		render += fmt.Sprintf(
-			`| %s | %s | %s | %s | %s | %s%% |` + "\n",
+		transactions = append(transactions, []string{
 			transaction.Asset,
 			util.FormatFloat(transaction.Quantity),
 			util.FormatFloat(transaction.GetAssetPrice()),
 			util.FormatFloat(transaction.Price),
 			util.FormatFloat(price),
 			util.FormatFloat(transaction.GetProfit(price)),
-		)
+		})
 	}
+
+	tableTraStr, err := builder.NewMarkDowTable(
+		[]string{"Asset", "Quantity", "By at", "By for (CAD)", "Price today", "Profit"},
+		transactions,
+	).Render()
+
+	if err != nil {
+		log.Fatalln("Error building the Table", err.Error())
+	}
+
+	render += tableTraStr
+
 	render += fmt.Sprintf(
 		"\n ## You invest in total: %s and your total profit is: %s%%",
 		util.FormatFloat(stats.GetTotalInvest()),
@@ -107,7 +114,7 @@ func main() {
 		)
 	}
 
-	tableStr, err := builder.NewMarkDowTable(
+	tableTopStr, err := builder.NewMarkDowTable(
 		[]string{"Symbol", "Profit"},
 		details,
 	).Render()
@@ -116,7 +123,7 @@ func main() {
 		log.Fatalln("Error building the Table", err.Error())
 	}
 
-	render += tableStr
+	render += tableTopStr
 
 	r, _ := glamour.NewTermRenderer(
 		// detect background color and pick either the default dark or light theme

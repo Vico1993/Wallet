@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func testRenderTable(t *testing.T) {
+func TestRenderTable(t *testing.T) {
 	type input struct {
 		header 	[]string
 		rows 	[][]string
