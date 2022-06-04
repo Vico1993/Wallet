@@ -3,7 +3,13 @@ package builder
 import (
 	"errors"
 	"regexp"
+	"strconv"
 	"strings"
+)
+
+const (
+	TITLE = "title"
+	ERROR = "error"
 )
 
 type markDownText struct {
@@ -11,28 +17,66 @@ type markDownText struct {
 	cType 	string
 }
 
-func (t markDownText) validationOfType() (string, error) {
+func (t markDownText) parseType() string {
 	matchTitle, _ := regexp.MatchString("^h[1-6]$", t.cType)
 	if (matchTitle) {
-		return "title", nil
+		return TITLE
 	}
 
-	return "error", errors.New("Type not supported at the moment, only support: " + strings.Join(getSupportedType(), ",") )
+	return ""
 }
 
-func NewMarkDowText(content string, ctype string) (*markDownText, error) {
+func (t markDownText) validationOfType() error {
+	tpe := t.parseType()
+
+	if tpe != "" {
+		return nil
+	}
+
+	return errors.New("Type not supported at the moment, only support: " + strings.Join(getSupportedType(), ",") )
+}
+
+func NewMarkDowText(content string, ctype string) (MarkDownBuilder, error) {
 	t := markDownText{
 		cType: ctype,
 		content: content,
 	}
 
-	_, err := t.validationOfType()
+	err := t.validationOfType()
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &t, nil
+}
+
+func (t markDownText) Render() (string, error) {
+	var renderString string
+
+	switch t.parseType() {
+    case TITLE:
+		titleNumber, err := strconv.ParseInt(
+			strings.ReplaceAll(
+				t.cType,
+				"h",
+				"",
+			),
+			10,
+			64,
+		)
+
+		if err != nil {
+			return "", err
+		}
+
+        renderString = strings.Repeat(
+			"#",
+			int(titleNumber),
+		) + " " + t.content
+    }
+
+	return renderString, nil
 }
 
 func getSupportedType() []string {

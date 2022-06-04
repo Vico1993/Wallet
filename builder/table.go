@@ -12,7 +12,7 @@ type markDownTable struct {
 }
 
 func NewMarkDowTable(header []string, rows [][]string) MarkDownBuilder {
-	return markDownTable{
+	return &markDownTable{
 		header: header,
 		rows: rows,
 	}
