@@ -14,7 +14,7 @@ func TestValidationFailed(t *testing.T) {
 
 	table := []struct {
 		input 		input
-		expected 	markDownText
+		expected 	*markDownText
 		err 		error
 	} {
 		{
@@ -22,7 +22,7 @@ func TestValidationFailed(t *testing.T) {
 				ctype: "link",
 				content: "blabl",
 			},
-			expected: markDownText{},
+			expected: nil,
 			err: errors.New("Type not supported at the moment, only support: " + strings.Join(getSupportedType(), ",")),
 		},
 		{
@@ -30,7 +30,7 @@ func TestValidationFailed(t *testing.T) {
 				ctype: "h1",
 				content: "blabl",
 			},
-			expected: markDownText{
+			expected: &markDownText{
 				cType: "h1",
 				content: "blabl",
 			},
@@ -43,8 +43,8 @@ func TestValidationFailed(t *testing.T) {
 
 		if 	(err != nil && test.err == nil) ||
 			(err == nil && test.err != nil) ||
-			(err != nil && test.err != nil && err.Error() != test.err.Error()) ||
-			(result != test.expected) {
+			(err != nil && test.err != nil && err.Error() != test.err.Error()) {
+
 			t.Error(
 				"Error trying to create a MarkDownText",
 				"Input:",
@@ -68,6 +68,21 @@ func TestValidationFailed(t *testing.T) {
 					test.err.Error(),
 				)
 			}
+		}
+
+		if result != nil &&
+			test.expected != nil &&
+			result.cType != test.expected.cType &&
+			result.content != test.expected.content {
+			t.Error(
+				"Result doesn't have the same value than expected",
+				"Input:",
+				test.input,
+				"Result",
+				result,
+				"Expected:",
+				test.expected,
+			)
 		}
 	}
 }

@@ -20,7 +20,7 @@ func (t markDownText) validationOfType() (string, error) {
 	return "error", errors.New("Type not supported at the moment, only support: " + strings.Join(getSupportedType(), ",") )
 }
 
-func NewMarkDowText(content string, ctype string) (markDownText, error) {
+func NewMarkDowText(content string, ctype string) (*markDownText, error) {
 	t := markDownText{
 		cType: ctype,
 		content: content,
@@ -29,12 +29,11 @@ func NewMarkDowText(content string, ctype string) (markDownText, error) {
 	_, err := t.validationOfType()
 
 	if err != nil {
-		return markDownText{}, err
+		return nil, err
 	}
 
-	return t, nil
+	return &t, nil
 }
-
 
 func getSupportedType() []string {
 	return []string{"h1", "h2", "h3", "h4", "h5", "h6"}
