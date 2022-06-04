@@ -14,7 +14,7 @@ func TestValidationFailed(t *testing.T) {
 
 	table := []struct {
 		input 		input
-		expected 	*markDownText
+		expected 	markDownText
 		err 		error
 	} {
 		{
@@ -22,15 +22,15 @@ func TestValidationFailed(t *testing.T) {
 				ctype: "link",
 				content: "blabl",
 			},
-			expected: nil,
-			err: errors.New("Type not supported at the moment, only support: " + strings.Join(title, " | ")),
+			expected: markDownText{},
+			err: errors.New("Type not supported at the moment, only support: " + strings.Join(getSupportedType(), ",")),
 		},
 		{
 			input: input{
 				ctype: "h1",
 				content: "blabl",
 			},
-			expected: &markDownText{
+			expected: markDownText{
 				cType: "h1",
 				content: "blabl",
 			},
@@ -41,7 +41,10 @@ func TestValidationFailed(t *testing.T) {
 	for _, test := range table {
 		result, err := NewMarkDowText(test.input.content, test.input.ctype)
 
-		if err != test.err && result != test.expected {
+		if 	(err != nil && test.err == nil) ||
+			(err == nil && test.err != nil) ||
+			(err != nil && test.err != nil && err.Error() != test.err.Error()) ||
+			(result != test.expected) {
 			t.Error(
 				"Error trying to create a MarkDownText",
 				"Input:",
@@ -51,6 +54,20 @@ func TestValidationFailed(t *testing.T) {
 				"Expected:",
 				test.expected,
 			)
+
+			if err!= nil {
+				t.Error(
+					"Err",
+					err.Error(),
+				)
+			}
+
+			if test.err != nil {
+				t.Error(
+					"Err",
+					test.err.Error(),
+				)
+			}
 		}
 	}
 }

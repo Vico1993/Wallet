@@ -1,37 +1,41 @@
 package builder
 
 import (
-	"Vico1993/Wallet/util"
 	"errors"
+	"regexp"
 	"strings"
 )
-
-var title = []string{"h1", "h2", "h3"}
 
 type markDownText struct {
 	content string
 	cType 	string
 }
 
-func (t markDownText) validationOfType() error {
-	if !util.IsInStringSlice(t.cType, title) {
-		return errors.New("Type not supported at the moment, only support: " + strings.Join(title, " | "))
+func (t markDownText) validationOfType() (string, error) {
+	matchTitle, _ := regexp.MatchString("^h[1-6]$", t.cType)
+	if (matchTitle) {
+		return "title", nil
 	}
 
-	return nil
+	return "error", errors.New("Type not supported at the moment, only support: " + strings.Join(getSupportedType(), ",") )
 }
 
-func NewMarkDowText(content string, ctype string) (*markDownText, error) {
+func NewMarkDowText(content string, ctype string) (markDownText, error) {
 	t := markDownText{
 		cType: ctype,
 		content: content,
 	}
 
-	err := t.validationOfType()
+	_, err := t.validationOfType()
 
 	if err != nil {
-		return nil, err
+		return markDownText{}, err
 	}
 
-	return &t, nil
+	return t, nil
+}
+
+
+func getSupportedType() []string {
+	return []string{"h1", "h2", "h3", "h4", "h5", "h6"}
 }
