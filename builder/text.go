@@ -36,22 +36,20 @@ func (t markDownText) validationOfType() error {
 	return errors.New("Type not supported at the moment, only support: " + strings.Join(getSupportedType(), ",") )
 }
 
-func NewMarkDowText(content string, ctype string) (MarkDownBuilder, error) {
-	t := markDownText{
+func NewMarkDowText(content string, ctype string) MarkDownBuilder {
+	return &markDownText{
 		cType: ctype,
 		content: content,
 	}
-
-	err := t.validationOfType()
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &t, nil
 }
 
 func (t markDownText) Render() (string, error) {
+	err := t.validationOfType()
+
+	if err != nil {
+		return "", err
+	}
+
 	var renderString string
 
 	switch t.parseType() {
@@ -73,7 +71,7 @@ func (t markDownText) Render() (string, error) {
         renderString = strings.Repeat(
 			"#",
 			int(titleNumber),
-		) + " " + t.content
+		) + " " + t.content + "\n"
     }
 
 	return renderString, nil
