@@ -43,6 +43,22 @@ func TestRender(t *testing.T) {
 		},
 		{
 			input: input{
+				ctype: "italic",
+				content: "blabl",
+			},
+			expected: "__blabl__\n",
+			err: nil,
+		},
+		{
+			input: input{
+				ctype: "ITalic",
+				content: "blabl",
+			},
+			expected: "__blabl__\n",
+			err: nil,
+		},
+		{
+			input: input{
 				ctype: "link",
 				content: "blabl",
 			},

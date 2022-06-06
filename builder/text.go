@@ -9,6 +9,7 @@ import (
 
 const (
 	TITLE = "title"
+	ITALIC = "italic"
 	ERROR = "error"
 )
 
@@ -21,6 +22,10 @@ func (t markDownText) parseType() string {
 	matchTitle, _ := regexp.MatchString("^h[1-6]$", t.cType)
 	if (matchTitle) {
 		return TITLE
+	}
+
+	if (strings.ToLower(t.cType) == ITALIC) {
+		return ITALIC
 	}
 
 	return ""
@@ -71,10 +76,12 @@ func (t markDownText) Render() (string, error) {
         renderString = strings.Repeat(
 			"#",
 			int(titleNumber),
-		) + " " + t.content + "\n"
-    }
+		) + " " + t.content
+    case ITALIC:
+		renderString = "__" + t.content + "__"
+	}
 
-	return renderString, nil
+	return renderString + "\n", nil
 }
 
 func getSupportedType() []string {

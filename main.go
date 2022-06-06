@@ -48,18 +48,20 @@ func main() {
 	}
 
 	wallet := GetData()
-
-	// @todo: Move this into a builder
-	// render := fmt.Sprintf(
-	// 	`# Wallet
-	// 	__At %s__ `,
-	// 	today,
-	// )
-
 	render, err := builder.NewMarkDowText("Wallet", "h1").Render()
 	if err != nil {
 		log.Fatalf("Error Creating h1")
 	}
+
+	str, err := builder.NewMarkDowText("At %s", "h2").Render()
+	if err != nil {
+		log.Fatalf("Error Creating SubTitle")
+	}
+
+	render += fmt.Sprintf(
+		str,
+		today,
+	)
 
 	render += fmt.Sprintf("We found %s number of transaction in your wallet, here is a small Summary: \n", strconv.Itoa(len(wallet.Transactions)))
 
@@ -98,7 +100,7 @@ func main() {
 
 	render += tableTraStr
 
-	txt, err := builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h2").Render()
+	txt, err := builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3").Render()
 	if err != nil {
 		log.Fatalf("Error Creating h1")
 	}
@@ -114,7 +116,12 @@ func main() {
 		saveResults(stats.GetTotalProfit())
 	}
 
-	render += fmt.Sprintln("\n# Top Crypto")
+	str, err = builder.NewMarkDowText("Top Crypto", "h1").Render()
+	if err != nil {
+		log.Fatalf("Error Creating h1")
+	}
+
+	render += str
 
 	var details [][]string
 	for _, detail := range stats.GetDetails() {
