@@ -139,8 +139,9 @@ func main() {
 			}
 		}
 
-		paramMatch, _ := regexp.MatchString("%s", renderStr)
-		if paramMatch {
+		paramMatch := regexp.MustCompile("%s")
+		fmt.Println(renderStr, paramMatch.MatchString(renderStr))
+		if paramMatch.FindString("%s") != "" {
 			render += fmt.Sprintf(
 				renderStr,
 				element.Data...,
