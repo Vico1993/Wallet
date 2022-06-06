@@ -24,3 +24,13 @@ func IsInStringSlice(a string, list []string) bool {
     }
     return false
 }
+
+// @todo: Add test
+func TransformStringSliceIntoInterface(list []string) []interface{} {
+	vals := make([]interface{}, len(list))
+    for i, v := range list {
+		vals[i] = v
+	}
+
+	return vals
+}

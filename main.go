@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -48,23 +49,6 @@ func main() {
 	}
 
 	wallet := GetData()
-	render, err := builder.NewMarkDowText("Wallet", "h1").Render()
-	if err != nil {
-		log.Fatalf("Error Creating h1")
-	}
-
-	str, err := builder.NewMarkDowText("At %s", "h2").Render()
-	if err != nil {
-		log.Fatalf("Error Creating SubTitle")
-	}
-
-	render += fmt.Sprintf(
-		str,
-		today,
-	)
-
-	render += fmt.Sprintf("We found %s number of transaction in your wallet, here is a small Summary: \n", strconv.Itoa(len(wallet.Transactions)))
-
 	var transactions [][]string
 	for _, transaction := range wallet.Transactions {
 		price, err := service.GetAssetPrice(transaction.Asset)
@@ -89,40 +73,6 @@ func main() {
 		})
 	}
 
-	tableTraStr, err := builder.NewMarkDowTable(
-		[]string{"Asset", "Quantity", "By at", "By for (CAD)", "Price today", "Profit"},
-		transactions,
-	).Render()
-
-	if err != nil {
-		log.Fatalln("Error building the Table", err.Error())
-	}
-
-	render += tableTraStr
-
-	txt, err := builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3").Render()
-	if err != nil {
-		log.Fatalf("Error Creating h1")
-	}
-
-	render += fmt.Sprintf(
-		txt,
-		util.FormatFloat(stats.GetTotalInvest()),
-		util.FormatFloat(stats.GetTotalProfit()),
-	)
-
-	// Save result for later
-	if os.Getenv("DEBUG") == "0" {
-		saveResults(stats.GetTotalProfit())
-	}
-
-	str, err = builder.NewMarkDowText("Top Crypto", "h1").Render()
-	if err != nil {
-		log.Fatalf("Error Creating h1")
-	}
-
-	render += str
-
 	var details [][]string
 	for _, detail := range stats.GetDetails() {
 		details = append(details, []string{
@@ -132,16 +82,75 @@ func main() {
 		})
 	}
 
-	tableTopStr, err := builder.NewMarkDowTable(
-		[]string{"Symbol", "Profit", "Quantity"},
-		details,
-	).Render()
-
-	if err != nil {
-		log.Fatalln("Error building the Table", err.Error())
+	// Save result for later
+	if os.Getenv("DEBUG") == "0" {
+		saveResults(stats.GetTotalProfit())
 	}
 
-	render += tableTopStr
+	data := []builder.MasterBuilder{
+		{
+			String: builder.NewMarkDowText("Wallet", "h1"),
+		},
+		{
+			String: builder.NewMarkDowText("At %s", "h2"),
+			Data: util.TransformStringSliceIntoInterface([]string{today}),
+		},
+		{
+			String: "We found %s number of transaction in your wallet, here is a small Summary: \n",
+			Data: util.TransformStringSliceIntoInterface([]string{strconv.Itoa(len(wallet.Transactions))}),
+		},
+		{
+			String: builder.NewMarkDowTable(
+				[]string{"Asset", "Quantity", "By at", "By for (CAD)", "Price today", "Profit"},
+				transactions,
+			),
+		},
+		{
+			String: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3"),
+			Data: util.TransformStringSliceIntoInterface([]string{
+				util.FormatFloat(stats.GetTotalInvest()),
+				util.FormatFloat(stats.GetTotalProfit()),
+			}),
+		},
+		{
+			String: builder.NewMarkDowText("Top Crypto", "h1"),
+		},
+		{
+			String: builder.NewMarkDowTable(
+				[]string{"Symbol", "Profit", "Quantity"},
+				details,
+			),
+		},
+	}
+
+	render := ""
+	// @todo: Degage moi ce code
+	for _, element := range data {
+		var renderStr = ""
+
+		if s, ok := element.String.(string); ok {
+			renderStr = s
+		}
+
+		if s, ok := element.String.(builder.MarkDownBuilder); ok {
+			renderStr, err = s.Render()
+			if err != nil {
+				log.Fatalln("Error Building MarkDownBuilder: ", err.Error())
+			}
+		}
+
+		paramMatch, _ := regexp.MatchString("%s", renderStr)
+		if paramMatch {
+			render += fmt.Sprintf(
+				renderStr,
+				element.Data...,
+			)
+		} else {
+			render += fmt.Sprint(
+				renderStr,
+			)
+		}
+	}
 
 	r, _ := glamour.NewTermRenderer(
 		// detect background color and pick either the default dark or light theme
