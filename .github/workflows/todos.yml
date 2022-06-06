@@ -17,7 +17,7 @@ jobs:
                   TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   REPO: ${{ github.repository }}
                   SHA: ${{ github.sha }}
-                  # REF: ${{ github.ref }}
+                  REF: ${{ github.ref }}
                   LABEL: "todo"
                   ADD_LIMIT: 0
                   CLOSE_LIMIT: 0
