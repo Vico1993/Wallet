@@ -124,7 +124,7 @@ func main() {
 	}
 
 	render := ""
-	// @todo: Degage moi ce code
+	// TODO : Clean main.go, find a better way to manage []]builder.MasterBuilder...
 	for _, element := range data {
 		var renderStr = ""
 
