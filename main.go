@@ -74,6 +74,7 @@ func main() {
 			transaction.Asset,
 			transaction.Price,
 			transaction.Quantity * price,
+			transaction.Quantity,
 		)
 
 		transactions = append(transactions, []string{
@@ -120,12 +121,12 @@ func main() {
 		details = append(details, []string{
 			detail.Symbol,
 			util.FormatFloat(detail.Profit),
-			},
-		)
+			util.FormatFloat(detail.Quantity),
+		})
 	}
 
 	tableTopStr, err := builder.NewMarkDowTable(
-		[]string{"Symbol", "Profit"},
+		[]string{"Symbol", "Profit", "Quantity"},
 		details,
 	).Render()
 

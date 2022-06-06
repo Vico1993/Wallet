@@ -61,9 +61,10 @@ func TestCalculProfit(t *testing.T) {
 
 func TestAddInvest(t *testing.T) {
 	type input struct {
-		symbol 	string
-		invest 	float64
-		value 	float64
+		symbol 		string
+		invest 		float64
+		value 		float64
+		quantity 	float64
 	}
 
 	table := []struct {
@@ -91,11 +92,13 @@ func TestAddInvest(t *testing.T) {
 					symbol: "BTC",
 					invest: 10,
 					value: 100,
+					quantity: 1,
 				},
 				input{
 					symbol: "BTC",
 					invest: 100,
 					value: 1000,
+					quantity: 2,
 				},
 			),
 			expected: Statistic{
@@ -110,16 +113,19 @@ func TestAddInvest(t *testing.T) {
 					symbol: "BTC",
 					invest: 10,
 					value: 100,
+					quantity: 1,
 				},
 				input{
 					symbol: "BTC",
 					invest: 100,
 					value: 1000,
+					quantity: 2,
 				},
 				input{
 					symbol: "ETH",
 					invest: 50,
 					value: 500,
+					quantity: 0.1,
 				},
 			),
 			expected: Statistic{
@@ -133,7 +139,7 @@ func TestAddInvest(t *testing.T) {
 		var result = Statistic{}
 
 		for _, i := range test.input {
-			result.AddInvest(i.symbol, i.invest, i.value)
+			result.AddInvest(i.symbol, i.invest, i.value, i.quantity)
 		}
 
 		if result.invest != test.expected.invest && result.value != test.expected.value && len(result.details) != len(test.input) {
@@ -152,9 +158,10 @@ func TestAddInvest(t *testing.T) {
 
 func TestGetDetails(t *testing.T) {
 	type input struct {
-		symbol 	string
-		invest 	float64
-		value 	float64
+		symbol 		string
+		invest 		float64
+		value 		float64
+		quantity 	float64
 	}
 
 	table := []struct {
@@ -167,26 +174,31 @@ func TestGetDetails(t *testing.T) {
 					invest: 100,
 					value: 50,
 					symbol: "BTC",
+					quantity: 1,
 				},
 				{
 					invest: 100,
 					value: 50,
 					symbol: "BTC",
+					quantity: 1,
 				},
 				{
 					invest: 10,
 					value: 100,
 					symbol: "ETH",
+					quantity: 1,
 				},
 			},
 			expected: []Details {
 				{
 					Symbol: "ETH",
 					Profit: 900,
+					Quantity: 1,
 				},
 				{
 					Symbol: "BTC",
 					Profit: -50,
+					Quantity: 2,
 				},
 			},
 		},
@@ -196,7 +208,7 @@ func TestGetDetails(t *testing.T) {
 		var stats = Statistic{}
 
 		for _, i := range test.input {
-			stats.AddInvest(i.symbol, i.invest, i.value)
+			stats.AddInvest(i.symbol, i.invest, i.value, i.quantity)
 		}
 
 		if !reflect.DeepEqual(stats.GetDetails(), test.expected) {

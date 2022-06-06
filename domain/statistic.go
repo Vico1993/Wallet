@@ -8,6 +8,7 @@ import (
 type dStatistic struct {
 	invest float64
 	value float64
+	quantity float64
 }
 
 type Statistic struct {
@@ -16,13 +17,19 @@ type Statistic struct {
 	details map[string]dStatistic
 }
 
+type Details struct {
+	Symbol  string
+	Profit  float64
+	Quantity float64
+}
+
 func calculProfit (startValue float64, endValue float64) (float64) {
 	profit := ((endValue - startValue) / startValue) * 100
 
 	return math.Round(profit*100)/100
 }
 
-func (s *Statistic) AddInvest(symbol string, invest float64, value float64) {
+func (s *Statistic) AddInvest(symbol string, invest float64, value float64, quantity float64) {
 	s.value += value
 	s.invest += invest
 
@@ -34,12 +41,14 @@ func (s *Statistic) AddInvest(symbol string, invest float64, value float64) {
 	if entry, ok := s.details[symbol]; ok {
 		entry.invest += invest
 		entry.value += value
+		entry.quantity += quantity
 
 		s.details[symbol] = entry
 	} else {
 		s.details[symbol] = dStatistic{
 			invest: invest,
 			value: value,
+			quantity: quantity,
 		}
 	}
 }
@@ -52,17 +61,12 @@ func (s Statistic) GetTotalInvest() (float64) {
 	return s.invest
 }
 
-type Details struct {
-	Symbol  string
-	Profit  float64
-}
-
 func (s Statistic) GetDetails() ([]Details) {
 	var detailsSorted []Details
 	for symbol, stat := range s.details {
 		profit := calculProfit(stat.invest, stat.value)
 
-		detailsSorted = append(detailsSorted, Details{symbol, profit})
+		detailsSorted = append(detailsSorted, Details{symbol, profit, stat.quantity})
 	}
 
 	sort.Slice(detailsSorted, func(i, j int) bool {
