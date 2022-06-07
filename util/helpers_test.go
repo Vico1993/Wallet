@@ -29,3 +29,45 @@ func TestFormatFloat(t *testing.T) {
 		}
 	}
 }
+
+func TestIsInStringSlice(t *testing.T) {
+	type input struct {
+		str 	string
+		list 	[]string
+	}
+
+	table := []struct {
+		input 		input
+		expected 	bool
+	}{
+		{
+			input: input{
+				str: "toto",
+				list: []string{"test", "word", "not", "in"},
+			},
+			expected: false,
+		},
+		{
+			input: input{
+				str: "in",
+				list: []string{"test", "word", "not", "in"},
+			},
+			expected: true,
+		},
+	}
+
+	for _, test := range table {
+		result := IsInStringSlice(test.input.str, test.input.list) != test.expected
+		if result {
+			t.Error(
+				"IsInStringSlice doesn't return the expected result",
+				"input:",
+				test.input,
+				"expected:",
+				test.expected,
+				"result:",
+				result,
+			)
+		}
+	}
+}
