@@ -59,14 +59,12 @@ func (t markDownText) Render() (string, error) {
 
 	switch t.parseType() {
     case TITLE:
-		titleNumber, err := strconv.ParseInt(
+		titleNumber, err := strconv.Atoi(
 			strings.ReplaceAll(
 				t.cType,
 				"h",
 				"",
 			),
-			10,
-			64,
 		)
 
 		if err != nil {
@@ -75,7 +73,7 @@ func (t markDownText) Render() (string, error) {
 
         renderString = strings.Repeat(
 			"#",
-			int(titleNumber),
+			titleNumber,
 		) + " " + t.content
     case ITALIC:
 		renderString = "__" + t.content + "__"
