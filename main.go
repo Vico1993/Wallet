@@ -140,7 +140,6 @@ func main() {
 		}
 
 		paramMatch := regexp.MustCompile("%s")
-		fmt.Println(renderStr, paramMatch.MatchString(renderStr))
 		if paramMatch.FindString("%s") != "" {
 			render += fmt.Sprintf(
 				renderStr,
