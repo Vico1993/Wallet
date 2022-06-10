@@ -19,13 +19,13 @@ func NewMarkDowTable(header []string, rows [][]string) MarkDownBuilder {
 }
 
 func (t *markDownTable) buildHeader() {
-	t.renderString += "| " + strings.Join(t.header, " | ") + " |" + "\n"
-	t.renderString += "| " + strings.Repeat(":-: |", len(t.header)) + "\n"
+	t.renderString += "|" + strings.Join(t.header, "|") + "|" + "\n"
+	t.renderString += "|" + strings.Repeat(":-:|", len(t.header)) + "\n"
 }
 
 func (t *markDownTable) buildRows() {
 	for _, row := range t.rows {
-		t.renderString += " | " + strings.Join(row, " | ") + "\n"
+		t.renderString += "|" + strings.Join(row, "|") + "|\n"
 	}
 }
 

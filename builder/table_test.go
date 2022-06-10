@@ -1,59 +1,33 @@
 package builder
 
 import (
-	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestRenderTable(t *testing.T) {
-	type input struct {
-		header 	[]string
-		rows 	[][]string
-	}
+func TestTableRenderNoRow(t *testing.T) {
+	tableMkd := NewMarkDowTable(
+		[]string{},
+		[][]string{},
+	)
 
-	table := []struct {
-		input 		input
-		expected 	string
-		err 		error
-	} {
-		{
-			input: input{
-				header: []string{},
-				rows: [][]string{},
-			},
-			expected: "",
-			err: errors.New("Please add at least one element in your header and your Rows"),
+	result, err := tableMkd.Render()
+
+	assert.Equal(t, result, "", "The result string should be an empty string")
+	assert.EqualError(t, err, "Please add at least one element in your header and your Rows", "Error doesn't match the expected")
+}
+
+func TestTableRenderATable(t *testing.T) {
+	tableMkd := NewMarkDowTable(
+		[]string{"Head1", "Heade2"},
+		[][]string{
+			{"col1", "col2"},
 		},
-		{
-			input: input{
-				header: []string{"Head1", "Heade2"},
-				rows: [][]string{
-					{"col1", "col2"},
-				},
-			},
-			expected: "| Head1 | Heade2 |\n| :-: |:-: |\n|col1|col2|\n",
-			err: nil,
-		},
-	}
+	)
 
-	for _, test := range table {
-		tableMkd := NewMarkDowTable(
-			test.input.header,
-			test.input.rows,
-		)
+	result, err := tableMkd.Render()
 
-		result, err := tableMkd.Render()
-
-		if err != test.err && result != test.expected {
-			t.Error(
-				"Error trying to render a Table",
-				"Input:",
-				test.input,
-				"Result",
-				result,
-				"Expected:",
-				test.expected,
-			)
-		}
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, "|Head1|Heade2|\n|:-:|:-:|\n|col1|col2|\n", result, "Table string doesn't match the expected")
 }

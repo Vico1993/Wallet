@@ -1,226 +1,134 @@
 package domain
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestCalculProfit(t *testing.T) {
-	type input struct {
-		start 	float64
-		end 	float64
-	}
+func TestCalculProfitWithNoGain(t *testing.T) {
+	result := calculProfit(50, 50)
 
-	table := []struct {
-		input 		input
-		expected 	float64
-	}{
-		{
-			input{
-				start: 50,
-				end: 50,
-			},
-			0,
-		},
-		{
-			input{
-				start: 50,
-				end: 100,
-			},
-			100,
-		},
-		{
-			input{
-				start: 50,
-				end: 10,
-			},
-			-80,
-		},
-		{
-			input{
-				start: 1,
-				end: 10,
-			},
-			900,
-		},
-	}
-
-	for _, test := range table {
-		result := calculProfit(test.input.start, test.input.end)
-		if result != test.expected {
-			t.Errorf(
-				"CalculProfit(Start: %f, End: %f) = %f, expected %f",
-				test.input.start,
-				test.input.end,
-				result,
-				test.expected,
-			)
-		}
-	}
+	assert.Equal(t, float64(0), result, "Result should be equal to 0")
 }
 
-func TestAddInvest(t *testing.T) {
-	type input struct {
-		symbol 		string
-		invest 		float64
-		value 		float64
-		quantity 	float64
-	}
+func TestCalculProfitGain(t *testing.T) {
+	result := calculProfit(50, 100)
 
-	table := []struct {
-		input 		[]input
-		expected 	Statistic
-	}{
-		{
-			input: append(
-				make([]input, 1),
-				input{
-					symbol: "BTC",
-					invest: 10,
-					value: 100,
-				},
-			),
-			expected: Statistic{
-				invest: 10,
-				value: 100,
-			},
-		},
-		{
-			input: append(
-				make([]input, 2),
-				input{
-					symbol: "BTC",
-					invest: 10,
-					value: 100,
-					quantity: 1,
-				},
-				input{
-					symbol: "BTC",
-					invest: 100,
-					value: 1000,
-					quantity: 2,
-				},
-			),
-			expected: Statistic{
-				invest: 110,
-				value: 1100,
-			},
-		},
-		{
-			input: append(
-				make([]input, 3),
-				input{
-					symbol: "BTC",
+	assert.Equal(t, float64(100), result, "Result should be equal to 100")
+}
+
+func TestCalculProfitWithNegativeGain(t *testing.T) {
+	result := calculProfit(50, 10)
+
+	assert.Equal(t, float64(-80), result, "Result should be equal to -80")
+}
+
+func TestCalculProfitWithLargeGain(t *testing.T) {
+	result := calculProfit(1, 10)
+
+	assert.Equal(t, float64(900), result, "Result should be equal to 900")
+}
+
+func TestAddInvestOneTransaction(t *testing.T) {
+	var result = Statistic{}
+
+	result.AddInvest("BTC", 10, 100, 1)
+
+	assert.Equal(
+		t,
+		Statistic{
+			invest: 10,
+			value: 100,
+			details: map[string]dStatistic{
+				"BTC": {
 					invest: 10,
 					value: 100,
 					quantity: 1,
 				},
-				input{
-					symbol: "BTC",
-					invest: 100,
-					value: 1000,
-					quantity: 2,
+			},
+		},
+		result,
+		"Struct doesn't match the expected",
+	)
+}
+
+func TestAddInvestTwoTransactionsSameCoin(t *testing.T) {
+	var result = Statistic{}
+
+	result.AddInvest("BTC", 10, 100, 1)
+	result.AddInvest("BTC", 100, 1000, 2)
+
+	assert.Equal(
+		t,
+		Statistic{
+			invest: 110,
+			value: 1100,
+			details: map[string]dStatistic{
+				"BTC": {
+					invest: 110,
+					value: 1100,
+					quantity: 3,
 				},
-				input{
-					symbol: "ETH",
+			},
+		},
+		result,
+		"Struct doesn't match the expected",
+	)
+}
+
+func TestAddInvestTwoCoin(t *testing.T) {
+	var result = Statistic{}
+
+	result.AddInvest("BTC", 10, 100, 1)
+	result.AddInvest("BTC", 100, 1000, 2)
+	result.AddInvest("ETH", 50, 500, 0.1)
+
+	assert.Equal(
+		t,
+		Statistic{
+			invest: 160,
+			value: 1600,
+			details: map[string]dStatistic{
+				"BTC": {
+					invest: 110,
+					value: 1100,
+					quantity: 3,
+				},
+				"ETH": {
 					invest: 50,
 					value: 500,
 					quantity: 0.1,
 				},
-			),
-			expected: Statistic{
-				invest: 160,
-				value: 1600,
 			},
 		},
-	}
-
-	for _, test := range table {
-		var result = Statistic{}
-
-		for _, i := range test.input {
-			result.AddInvest(i.symbol, i.invest, i.value, i.quantity)
-		}
-
-		if result.invest != test.expected.invest && result.value != test.expected.value && len(result.details) != len(test.input) {
-			t.Errorf(
-				"AddInvest input(Invest: %f, Value: %f, len(details): %d) = expected(Invest: %f, Value: %f, len(details): %d)",
-				result.invest,
-				result.value,
-				len(result.details),
-				test.expected.invest,
-				test.expected.value,
-				len(test.expected.details),
-			)
-		}
-	}
+		result,
+		"Struct doesn't match the expected",
+	)
 }
 
-func TestGetDetails(t *testing.T) {
-	type input struct {
-		symbol 		string
-		invest 		float64
-		value 		float64
-		quantity 	float64
-	}
+func TestDetailsWithTwoCoin(t *testing.T) {
+	var result = Statistic{}
 
-	table := []struct {
-		input 		[]input
-		expected 	[]Details
-	} {
-		{
-			input: 	[]input{
-				{
-					invest: 100,
-					value: 50,
-					symbol: "BTC",
-					quantity: 1,
-				},
-				{
-					invest: 100,
-					value: 50,
-					symbol: "BTC",
-					quantity: 1,
-				},
-				{
-					invest: 10,
-					value: 100,
-					symbol: "ETH",
-					quantity: 1,
-				},
+	result.AddInvest("BTC", 10, 50, 1)
+	result.AddInvest("BTC", 100, 50, 1)
+	result.AddInvest("ETH", 10, 100, 1)
+
+	assert.Equal(
+		t,
+		[]Details {
+			{
+				Symbol: "ETH",
+				Profit: 900,
+				Quantity: 1,
 			},
-			expected: []Details {
-				{
-					Symbol: "ETH",
-					Profit: 900,
-					Quantity: 1,
-				},
-				{
-					Symbol: "BTC",
-					Profit: -50,
-					Quantity: 2,
-				},
+			{
+				Symbol: "BTC",
+				Profit: -9.09,
+				Quantity: 2,
 			},
 		},
-	}
-
-	for _, test := range table {
-		var stats = Statistic{}
-
-		for _, i := range test.input {
-			stats.AddInvest(i.symbol, i.invest, i.value, i.quantity)
-		}
-
-		if !reflect.DeepEqual(stats.GetDetails(), test.expected) {
-			t.Error(
-				"getDetails return incorrect value than expected",
-				"\nGetDetails Value:\n",
-				stats.GetDetails(),
-				"\nInput:\n",
-				test.input,
-				"\nExpected:\n",
-				test.expected,
-			)
-		}
-	}
+		result.GetDetails(),
+		"Details doesn't match the expectation",
+	)
 }

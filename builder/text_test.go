@@ -1,96 +1,56 @@
 package builder
 
 import (
-	"errors"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestRender(t *testing.T) {
-	type input struct {
-		ctype 	string
-		content string
-	}
+func TestTextRenderTitle1(t *testing.T) {
+	mkText := NewMarkDowText("blabl", "h1")
+	result, err := mkText.Render()
 
-	table := []struct {
-		input 		input
-		expected 	string
-		err 		error
-	} {
-		{
-			input: input{
-				ctype: "h1",
-				content: "blabl",
-			},
-			expected: "# blabl\n",
-			err: nil,
-		},
-		{
-			input: input{
-				ctype: "h5",
-				content: "blabl",
-			},
-			expected: "##### blabl\n",
-			err: nil,
-		},
-		{
-			input: input{
-				ctype: "h2",
-				content: "blabl",
-			},
-			expected: "## blabl\n",
-			err: nil,
-		},
-		{
-			input: input{
-				ctype: "italic",
-				content: "blabl",
-			},
-			expected: "__blabl__\n",
-			err: nil,
-		},
-		{
-			input: input{
-				ctype: "ITalic",
-				content: "blabl",
-			},
-			expected: "__blabl__\n",
-			err: nil,
-		},
-		{
-			input: input{
-				ctype: "link",
-				content: "blabl",
-			},
-			expected: "",
-			err: errors.New("Type not supported at the moment, only support: " + strings.Join(getSupportedType(), ",") ),
-		},
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, "# blabl\n", result, "The markdown string is incorrect")
+}
 
-	for _, test := range table {
-		mkText := NewMarkDowText(test.input.content, test.input.ctype)
+func TestTextRenderTitle5(t *testing.T) {
+	mkText := NewMarkDowText("blabl", "h5")
+	result, err := mkText.Render()
 
-		result, err := mkText.Render()
-		if err != nil && err.Error() != test.err.Error() {
-			t.Error(
-				"Unexpected error of Render with error: ",
-				err.Error(),
-				"Expected error:",
-				test.err,
-				"Input:",
-				test.input,
-			)
-		}
+	assert.Nil(t, err)
+	assert.Equal(t, result, "##### blabl\n", "The markdown string is incorrect")
+}
 
-		if result != test.expected {
-			t.Error(
-				"Expected result from Render doesn't match:",
-				test.expected,
-				"Result:",
-				result,
-				"Input:",
-				test.input,
-			)
-		}
-	}
+func TestTextRenderTitle2(t *testing.T) {
+	mkText := NewMarkDowText("blabl", "h2")
+	result, err := mkText.Render()
+
+	assert.Nil(t, err)
+	assert.Equal(t, result, "## blabl\n", "The markdown string is incorrect")
+}
+
+func TestTextRenderItalic(t *testing.T) {
+	mkText := NewMarkDowText("blabl", "italic")
+	result, err := mkText.Render()
+
+	assert.Nil(t, err)
+	assert.Equal(t, result, "__blabl__\n", "The markdown string is incorrect")
+}
+
+func TestTextRenderItalicCapitalType(t *testing.T) {
+	mkText := NewMarkDowText("blabl", "iTAlic")
+	result, err := mkText.Render()
+
+	assert.Nil(t, err)
+	assert.Equal(t, result, "__blabl__\n", "The markdown string is incorrect")
+}
+
+func TestTextRenderTypeNotSupported(t *testing.T) {
+	mkText := NewMarkDowText("blabl", "link")
+	result, err := mkText.Render()
+
+	assert.Equal(t, result, "", "The result string should be an empty string")
+	assert.EqualError(t, err, "Type not supported at the moment, only support: " + strings.Join(getSupportedType(), ","), "Error doesn't match the expected")
 }

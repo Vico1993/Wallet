@@ -2,72 +2,29 @@ package util
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestFormatFloat(t *testing.T) {
-	table := []struct {
-		input 		float64
-		expected 	string
-	}{
-		{
-			input: 3.467,
-			expected: "3.46",
-		},
-		{
-			input: 0.0067,
-			expected: "0.0067",
-		},
-	}
+func TestTransformFloatToString(t *testing.T) {
+	result := FormatFloat(3.467)
 
-	for _, test := range table {
-		if FormatFloat(test.input) != test.expected {
-			t.Errorf(
-				"formatFloat(input: %f) - expected %s",
-				test.input,
-				test.expected,
-			)
-		}
-	}
+	assert.Equal(t, "3.46", result)
 }
 
-func TestIsInStringSlice(t *testing.T) {
-	type input struct {
-		str 	string
-		list 	[]string
-	}
+func TestTransformFloatToStringWithVerySmallValue(t *testing.T) {
+	result := FormatFloat(0.0067)
 
-	table := []struct {
-		input 		input
-		expected 	bool
-	}{
-		{
-			input: input{
-				str: "toto",
-				list: []string{"test", "word", "not", "in"},
-			},
-			expected: false,
-		},
-		{
-			input: input{
-				str: "in",
-				list: []string{"test", "word", "not", "in"},
-			},
-			expected: true,
-		},
-	}
+	assert.Equal(t, "0.0067", result)
+}
 
-	for _, test := range table {
-		result := IsInStringSlice(test.input.str, test.input.list) != test.expected
-		if result {
-			t.Error(
-				"IsInStringSlice doesn't return the expected result",
-				"input:",
-				test.input,
-				"expected:",
-				test.expected,
-				"result:",
-				result,
-			)
-		}
-	}
+
+func TestIsInStringSliceNotIn(t *testing.T) {
+	result := IsInStringSlice("toto", []string{"test", "word", "not", "in"})
+	assert.Equal(t, false, result)
+}
+
+func TestIsInStringSliceIn(t *testing.T) {
+	result := IsInStringSlice("in", []string{"test", "word", "not", "in"})
+	assert.Equal(t, true, result)
 }
