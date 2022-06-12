@@ -11,9 +11,12 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
+	"unsafe"
 
 	"github.com/charmbracelet/glamour"
+	"github.com/guptarohit/asciigraph"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
@@ -22,6 +25,7 @@ var stats = domain.Statistic{}
 var today = time.Now().Local().Format("2006-01-02 15:04:05")
 var v = viper.GetViper()
 
+// TOOD: Move these method into.. Something pretty.
 func saveResults(p float64) {
 	v.Set(
 		"previous_result",
@@ -35,6 +39,56 @@ func saveResults(p float64) {
 	if err != nil {
 		log.Fatalln("Error saving profit")
 	}
+}
+
+func getHistoricData() []float64 {
+	historicFloat := []float64{}
+	for _, row := range v.GetStringSlice("previous_result") {
+		row = strings.Replace(row, "%", "", -1)
+
+		data := strings.Split(row, " - ")
+		if len(data) > 1 {
+			profitValue, _ := strconv.ParseFloat(data[1], 64)
+			historicFloat = append(historicFloat, profitValue)
+		}
+	}
+
+	return historicFloat
+}
+
+func getFirstDateOfHistoric() string {
+	firstDate := today
+	rows := v.GetStringSlice("previous_result")
+
+	if len(rows) > 0 {
+		firstRow := rows[0]
+		tmp := strings.Split(firstRow, " - ")
+
+		firstDate = tmp[0]
+	}
+
+	return firstDate
+}
+
+type winsize struct {
+    Row    uint16
+    Col    uint16
+    Xpixel uint16
+    Ypixel uint16
+}
+
+// TODO: Move this into a util function, and get proper size... Seems kind of broken now
+func getWidth() int {
+    ws := &winsize{}
+    retCode, _, errno := syscall.Syscall(syscall.SYS_IOCTL,
+        uintptr(syscall.Stdin),
+        uintptr(syscall.TIOCGWINSZ),
+        uintptr(unsafe.Pointer(ws)))
+
+    if int(retCode) == -1 {
+        panic(errno)
+    }
+    return int(ws.Col)
 }
 
 func main() {
@@ -87,6 +141,7 @@ func main() {
 		saveResults(stats.GetTotalProfit())
 	}
 
+	historicData := getHistoricData()
 	data := []builder.MasterBuilder{
 		{
 			String: builder.NewMarkDowText("Wallet", "h1"),
@@ -120,6 +175,16 @@ func main() {
 				[]string{"Symbol", "Profit", "Quantity"},
 				details,
 			),
+		},
+		{
+			String: builder.NewMarkDowText("Historic of Profit", "h1"),
+		},
+		{
+			String: builder.NewMarkDowText("From %s to %s", "h2"),
+			Data: util.TransformStringSliceIntoInterface([]string{
+				getFirstDateOfHistoric(),
+				today,
+			}),
 		},
 	}
 
@@ -167,4 +232,9 @@ func main() {
 		log.Println(err)
 	}
 	fmt.Print(out)
+
+	// TODO: Move this into a BUILDER - Find a way to include this in the markdown?
+    fmt.Println(
+		asciigraph.Plot(historicData, asciigraph.Width(getWidth())),
+	)
 }
