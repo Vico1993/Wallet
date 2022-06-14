@@ -11,9 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
-	"unsafe"
 
 	"github.com/charmbracelet/glamour"
 	"github.com/guptarohit/asciigraph"
@@ -68,27 +66,6 @@ func getFirstDateOfHistoric() string {
 	}
 
 	return firstDate
-}
-
-type winsize struct {
-    Row    uint16
-    Col    uint16
-    Xpixel uint16
-    Ypixel uint16
-}
-
-// TODO: Move this into a util function, and get proper size... Seems kind of broken now
-func getWidth() int {
-    ws := &winsize{}
-    retCode, _, errno := syscall.Syscall(syscall.SYS_IOCTL,
-        uintptr(syscall.Stdin),
-        uintptr(syscall.TIOCGWINSZ),
-        uintptr(unsafe.Pointer(ws)))
-
-    if int(retCode) == -1 {
-        panic(errno)
-    }
-    return int(ws.Col)
 }
 
 func main() {
@@ -161,20 +138,20 @@ func main() {
 			),
 		},
 		{
-			String: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3"),
-			Data: util.TransformStringSliceIntoInterface([]string{
-				util.FormatFloat(stats.GetTotalInvest()),
-				util.FormatFloat(stats.GetTotalProfit()),
-			}),
-		},
-		{
-			String: builder.NewMarkDowText("Top Crypto", "h1"),
+			String: builder.NewMarkDowText("Resume by Crypto", "h1"),
 		},
 		{
 			String: builder.NewMarkDowTable(
 				[]string{"Symbol", "Profit", "Quantity"},
 				details,
 			),
+		},
+		{
+			String: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3"),
+			Data: util.TransformStringSliceIntoInterface([]string{
+				util.FormatFloat(stats.GetTotalInvest()),
+				util.FormatFloat(stats.GetTotalProfit()),
+			}),
 		},
 		{
 			String: builder.NewMarkDowText("Historic of Profit", "h1"),
@@ -235,6 +212,9 @@ func main() {
 
 	// TODO: Move this into a BUILDER - Find a way to include this in the markdown?
     fmt.Println(
-		asciigraph.Plot(historicData, asciigraph.Width(getWidth())),
+		asciigraph.Plot(
+			historicData,
+			asciigraph.SeriesColors(asciigraph.Red),
+		),
 	)
 }
