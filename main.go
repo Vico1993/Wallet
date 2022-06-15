@@ -212,9 +212,15 @@ func main() {
 
 	// TODO: Move this into a BUILDER - Find a way to include this in the markdown?
     fmt.Println(
-		asciigraph.Plot(
-			historicData,
-			asciigraph.SeriesColors(asciigraph.Red),
+		asciigraph.PlotMany(
+			[][]float64{
+				historicData,
+				make([]float64, len(historicData)),
+			},
+			asciigraph.SeriesColors(
+				asciigraph.Red,
+				asciigraph.White,
+			),
 		),
 	)
 }
