@@ -171,6 +171,7 @@ func main() {
 		log.Fatalln("Error building the Markdown", err.Error())
 	}
 
+	// TODO: Each builder should render their own part of Markdown. So it will be easier to add graph in a middle
 	r, _ := glamour.NewTermRenderer(
 		// detect background color and pick either the default dark or light theme
 		glamour.WithAutoStyle(),
