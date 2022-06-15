@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +17,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
+
+// TODO: Deal with error in a nice way...
 
 var stats = domain.Statistic{}
 var today = time.Now().Local().Format("2006-01-02 15:04:05")
@@ -119,17 +120,17 @@ func main() {
 	}
 
 	historicData := getHistoricData()
-	data := []builder.MasterBuilder{
+	markdown := builder.NewMarkDown([]builder.MarkDownData{
 		{
 			String: builder.NewMarkDowText("Wallet", "h1"),
 		},
 		{
 			String: builder.NewMarkDowText("At %s", "h2"),
-			Data: util.TransformStringSliceIntoInterface([]string{today}),
+			Variable: util.TransformStringSliceIntoInterface([]string{today}),
 		},
 		{
 			String: "We found %s number of transaction in your wallet, here is a small Summary: \n",
-			Data: util.TransformStringSliceIntoInterface([]string{strconv.Itoa(len(wallet.Transactions))}),
+			Variable: util.TransformStringSliceIntoInterface([]string{strconv.Itoa(len(wallet.Transactions))}),
 		},
 		{
 			String: builder.NewMarkDowTable(
@@ -148,7 +149,7 @@ func main() {
 		},
 		{
 			String: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3"),
-			Data: util.TransformStringSliceIntoInterface([]string{
+			Variable: util.TransformStringSliceIntoInterface([]string{
 				util.FormatFloat(stats.GetTotalInvest()),
 				util.FormatFloat(stats.GetTotalProfit()),
 			}),
@@ -158,40 +159,16 @@ func main() {
 		},
 		{
 			String: builder.NewMarkDowText("From %s to %s", "h2"),
-			Data: util.TransformStringSliceIntoInterface([]string{
+			Variable: util.TransformStringSliceIntoInterface([]string{
 				getFirstDateOfHistoric(),
 				today,
 			}),
 		},
-	}
+	})
 
-	render := ""
-	// TODO: Clean main.go - find a better way to manage []]builder.MasterBuilder...
-	for _, element := range data {
-		var renderStr = ""
-
-		if s, ok := element.String.(string); ok {
-			renderStr = s
-		}
-
-		if s, ok := element.String.(builder.MarkDownBuilder); ok {
-			renderStr, err = s.Render()
-			if err != nil {
-				log.Fatalln("Error Building MarkDownBuilder: ", err.Error())
-			}
-		}
-
-		paramMatch := regexp.MustCompile("%s")
-		if paramMatch.FindString("%s") != "" {
-			render += fmt.Sprintf(
-				renderStr,
-				element.Data...,
-			)
-		} else {
-			render += fmt.Sprint(
-				renderStr,
-			)
-		}
+	render, err := markdown.Render()
+	if err != nil {
+		log.Fatalln("Error building the Markdown", err.Error())
 	}
 
 	r, _ := glamour.NewTermRenderer(
