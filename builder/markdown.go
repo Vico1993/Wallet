@@ -21,9 +21,7 @@ func NewMarkDown(d []MarkDownData) MarkDownBuilder {
 
 func (m MarkDown) Render() error {
 	for _, element := range m.data {
-		var err error
-
-		err = element.Block.Render()
+		err := element.Block.Render()
 		if err != nil {
 			return err
 		}
