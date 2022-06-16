@@ -1,56 +1,91 @@
 package builder
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTextRenderTitle1(t *testing.T) {
-	mkText := NewMarkDowText("blabl", "h1")
-	result, err := mkText.Render()
+func TestTextBuildTitle1(t *testing.T) {
+	mkText := markDownText{
+		cType: "h1",
+		data: nil,
+		content: "blabl",
+	}
+	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, "# blabl\n", result, "The markdown string is incorrect")
+	assert.Equal(t, "# blabl", result, "The markdown string is incorrect")
 }
 
-func TestTextRenderTitle5(t *testing.T) {
-	mkText := NewMarkDowText("blabl", "h5")
-	result, err := mkText.Render()
+func TestTextBuildTitle5(t *testing.T) {
+	mkText := markDownText{
+		cType: "h5",
+		data: nil,
+		content: "blabl",
+	}
+	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, result, "##### blabl\n", "The markdown string is incorrect")
+	assert.Equal(t, result, "##### blabl", "The markdown string is incorrect")
 }
 
-func TestTextRenderTitle2(t *testing.T) {
-	mkText := NewMarkDowText("blabl", "h2")
-	result, err := mkText.Render()
+func TestTextBuildTitle2(t *testing.T) {
+	mkText := markDownText{
+		cType: "h2",
+		data: nil,
+		content: "blabl",
+	}
+	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, result, "## blabl\n", "The markdown string is incorrect")
+	assert.Equal(t, result, "## blabl", "The markdown string is incorrect")
 }
 
-func TestTextRenderItalic(t *testing.T) {
-	mkText := NewMarkDowText("blabl", "italic")
-	result, err := mkText.Render()
+func TestTextBuildItalic(t *testing.T) {
+	mkText := markDownText{
+		cType: "italic",
+		data: nil,
+		content: "blabl",
+	}
+	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, result, "__blabl__\n", "The markdown string is incorrect")
+	assert.Equal(t, result, "__blabl__", "The markdown string is incorrect")
 }
 
-func TestTextRenderItalicCapitalType(t *testing.T) {
-	mkText := NewMarkDowText("blabl", "iTAlic")
-	result, err := mkText.Render()
+func TestTextBuildItalicCapitalType(t *testing.T) {
+	mkText := markDownText{
+		cType: "iTAlic",
+		data: nil,
+		content: "blabl",
+	}
+	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, result, "__blabl__\n", "The markdown string is incorrect")
+	assert.Equal(t, result, "__blabl__", "The markdown string is incorrect")
 }
 
-func TestTextRenderTypeNotSupported(t *testing.T) {
-	mkText := NewMarkDowText("blabl", "link")
-	result, err := mkText.Render()
+func TestTextBuildText(t *testing.T) {
+	mkText := markDownText{
+		cType: "text",
+		data: nil,
+		content: "blabl",
+	}
+	result, err := mkText.Build()
 
-	assert.Equal(t, result, "", "The result string should be an empty string")
-	assert.EqualError(t, err, "Type not supported at the moment, only support: " + strings.Join(getSupportedType(), ","), "Error doesn't match the expected")
+	assert.Nil(t, err)
+	assert.Equal(t, result, "blabl", "The result string should be an empty string")
+}
+
+func TestTextBuildTextWithVariable(t *testing.T) {
+	mkText := markDownText{
+		cType: "text",
+		data: []interface{}{"toto"},
+		content: "blabl %s",
+	}
+	result, err := mkText.Build()
+
+	assert.Nil(t, err)
+	assert.Equal(t, result, "blabl toto", "The result string should be an empty string")
 }

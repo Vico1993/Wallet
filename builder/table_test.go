@@ -12,22 +12,20 @@ func TestTableRenderNoRow(t *testing.T) {
 		[][]string{},
 	)
 
-	result, err := tableMkd.Render()
+	err := tableMkd.Render()
 
-	assert.Equal(t, result, "", "The result string should be an empty string")
 	assert.EqualError(t, err, "Please add at least one element in your header and your Rows", "Error doesn't match the expected")
 }
 
-func TestTableRenderATable(t *testing.T) {
-	tableMkd := NewMarkDowTable(
-		[]string{"Head1", "Heade2"},
-		[][]string{
+func TestTableBuildATable(t *testing.T) {
+	tableMkd := markDownTable{
+		header: []string{"Head1", "Heade2"},
+		rows: [][]string{
 			{"col1", "col2"},
 		},
-	)
+	}
 
-	result, err := tableMkd.Render()
+	result := tableMkd.Build()
 
-	assert.Nil(t, err)
 	assert.Equal(t, "|Head1|Heade2|\n|:-:|:-:|\n|col1|col2|\n", result, "Table string doesn't match the expected")
 }

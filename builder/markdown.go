@@ -1,18 +1,12 @@
 package builder
 
-import (
-	"errors"
-	"fmt"
-	"regexp"
-)
-
+// TODO: Improve this class
 type MarkDownBuilder interface {
-	Render() (string, error)
+	Render() 	error
 }
 
 type MarkDownData struct {
-	String 		interface{}
-	Variable 	[]interface{}
+	String 		MarkDownBuilder
 }
 
 type MarkDown struct {
@@ -25,36 +19,15 @@ func NewMarkDown(d []MarkDownData) MarkDownBuilder {
 	}
 }
 
-func (m MarkDown) Render() (string, error) {
-	render := ""
-
+func (m MarkDown) Render() error {
 	for _, element := range m.data {
 		var err error
-		var renderStr string
 
-		if s, ok := element.String.(string); ok {
-			renderStr = s
-		} else if s, ok := element.String.(MarkDownBuilder); ok {
-			renderStr, err = s.Render()
-			if err != nil {
-				return "", err
-			}
-		} else {
-			return "", errors.New("Type not supported")
-		}
-
-		paramMatch := regexp.MustCompile("%s")
-		if paramMatch.FindString("%s") != "" {
-			render += fmt.Sprintf(
-				renderStr,
-				element.Variable...,
-			)
-		} else {
-			render += fmt.Sprint(
-				renderStr,
-			)
+		err = element.String.Render()
+		if err != nil {
+			return err
 		}
 	}
 
-	return render, nil
+	return nil
 }

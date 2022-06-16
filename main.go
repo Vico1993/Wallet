@@ -5,21 +5,17 @@ import (
 	"Vico1993/Wallet/domain"
 	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/glamour"
-	"github.com/guptarohit/asciigraph"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
 // TODO: Deal with error in a nice way...
-
 var stats = domain.Statistic{}
 var today = time.Now().Local().Format("2006-01-02 15:04:05")
 var v = viper.GetViper()
@@ -119,18 +115,19 @@ func main() {
 		saveResults(stats.GetTotalProfit())
 	}
 
-	historicData := getHistoricData()
+	// historicData := getHistoricData()
 	markdown := builder.NewMarkDown([]builder.MarkDownData{
 		{
-			String: builder.NewMarkDowText("Wallet", "h1"),
+			String: builder.NewMarkDowText("Wallet", "h1", nil),
 		},
 		{
-			String: builder.NewMarkDowText("At %s", "h2"),
-			Variable: util.TransformStringSliceIntoInterface([]string{today}),
+			String: builder.NewMarkDowText("At %s", "h2", util.TransformStringSliceIntoInterface([]string{today})),
 		},
 		{
-			String: "We found %s number of transaction in your wallet, here is a small Summary: \n",
-			Variable: util.TransformStringSliceIntoInterface([]string{strconv.Itoa(len(wallet.Transactions))}),
+			String: builder.NewMarkDowText("We found %s number of transaction in your wallet, here is a small Summary:", "text", util.TransformStringSliceIntoInterface([]string{
+					strconv.Itoa(len(wallet.Transactions)),
+				}),
+			),
 		},
 		{
 			String: builder.NewMarkDowTable(
@@ -139,7 +136,7 @@ func main() {
 			),
 		},
 		{
-			String: builder.NewMarkDowText("Resume by Crypto", "h1"),
+			String: builder.NewMarkDowText("Resume by Crypto", "h1", nil),
 		},
 		{
 			String: builder.NewMarkDowTable(
@@ -148,57 +145,39 @@ func main() {
 			),
 		},
 		{
-			String: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3"),
-			Variable: util.TransformStringSliceIntoInterface([]string{
-				util.FormatFloat(stats.GetTotalInvest()),
-				util.FormatFloat(stats.GetTotalProfit()),
-			}),
+			String: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3", util.TransformStringSliceIntoInterface([]string{
+					util.FormatFloat(stats.GetTotalInvest()),
+					util.FormatFloat(stats.GetTotalProfit()),
+				}),
+			),
 		},
 		{
-			String: builder.NewMarkDowText("Historic of Profit", "h1"),
+			String: builder.NewMarkDowText("Historic of Profit", "h1", nil),
 		},
 		{
-			String: builder.NewMarkDowText("From %s to %s", "h2"),
-			Variable: util.TransformStringSliceIntoInterface([]string{
-				getFirstDateOfHistoric(),
-				today,
-			}),
+			String: builder.NewMarkDowText("From %s to %s", "h2", util.TransformStringSliceIntoInterface([]string{
+					getFirstDateOfHistoric(),
+					today,
+				}),
+			),
 		},
 	})
 
-	render, err := markdown.Render()
+	err = markdown.Render()
 	if err != nil {
 		log.Fatalln("Error building the Markdown", err.Error())
 	}
 
-	// TODO: Each builder should render their own part of Markdown. So it will be easier to add graph in a middle
-	r, _ := glamour.NewTermRenderer(
-		// detect background color and pick either the default dark or light theme
-		glamour.WithAutoStyle(),
-		// wrap output at specific width
-		glamour.WithWordWrap(100),
-	)
-
-	out, err := r.Render(
-		strings.ReplaceAll(render, "\t", ""),
-	)
-
-	if err != nil {
-		log.Println(err)
-	}
-	fmt.Print(out)
-
-	// TODO: Move this into a BUILDER - Find a way to include this in the markdown?
-    fmt.Println(
-		asciigraph.PlotMany(
-			[][]float64{
-				historicData,
-				make([]float64, len(historicData)),
-			},
-			asciigraph.SeriesColors(
-				asciigraph.Red,
-				asciigraph.White,
-			),
-		),
-	)
+    // fmt.Println(
+	// 	asciigraph.PlotMany(
+	// 		[][]float64{
+	// 			historicData,
+	// 			make([]float64, len(historicData)),
+	// 		},
+	// 		asciigraph.SeriesColors(
+	// 			asciigraph.Red,
+	// 			asciigraph.White,
+	// 		),
+	// 	),
+	// )
 }

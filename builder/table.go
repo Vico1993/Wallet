@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"Vico1993/Wallet/util"
 	"errors"
 	"strings"
 )
@@ -29,16 +30,20 @@ func (t *markDownTable) buildRows() {
 	}
 }
 
-func (t markDownTable) Render() (string, error) {
-	if len(t.header) == 0 || len(t.rows) == 0 {
-		return "", errors.New("Please add at least one element in your header and your Rows")
-	}
-
+func (t markDownTable) Build() (string) {
 	// First the Header
 	t.buildHeader()
 
 	// Then Rows
 	t.buildRows()
 
-	return strings.ReplaceAll(t.renderString, "\t", ""), nil
+	return t.renderString
+}
+
+func (t markDownTable) Render() error {
+	if len(t.header) == 0 || len(t.rows) == 0 {
+		return errors.New("Please add at least one element in your header and your Rows")
+	}
+
+	return util.RenderMarkdown(t.Build())
 }
