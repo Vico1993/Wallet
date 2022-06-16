@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/glamour"
-	"github.com/guptarohit/asciigraph"
 )
 
 // TODO: Find out why we have a BIG spaces
@@ -25,12 +24,4 @@ func RenderMarkdown(s string) error {
 	fmt.Print(out)
 
 	return nil
-}
-
-func RenderGraph(lists ...[]float64) {
-	fmt.Println(
-		asciigraph.PlotMany(
-			lists,
-		),
-	)
 }

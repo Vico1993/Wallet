@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/guptarohit/asciigraph"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
@@ -115,7 +116,7 @@ func main() {
 		saveResults(stats.GetTotalProfit())
 	}
 
-	// historicData := getHistoricData()
+	historicData := getHistoricData()
 	markdown := builder.NewMarkDown([]builder.MarkDownData{
 		{
 			String: builder.NewMarkDowText("Wallet", "h1", nil),
@@ -155,6 +156,18 @@ func main() {
 			String: builder.NewMarkDowText("Historic of Profit", "h1", nil),
 		},
 		{
+			String: builder.NewGraph(
+				[]asciigraph.Option{
+					asciigraph.SeriesColors(
+						asciigraph.Red,
+						asciigraph.White,
+					),
+				},
+				historicData,
+				make([]float64, len(historicData)),
+			),
+		},
+		{
 			String: builder.NewMarkDowText("From %s to %s", "h2", util.TransformStringSliceIntoInterface([]string{
 					getFirstDateOfHistoric(),
 					today,
@@ -167,17 +180,4 @@ func main() {
 	if err != nil {
 		log.Fatalln("Error building the Markdown", err.Error())
 	}
-
-    // fmt.Println(
-	// 	asciigraph.PlotMany(
-	// 		[][]float64{
-	// 			historicData,
-	// 			make([]float64, len(historicData)),
-	// 		},
-	// 		asciigraph.SeriesColors(
-	// 			asciigraph.Red,
-	// 			asciigraph.White,
-	// 		),
-	// 	),
-	// )
 }

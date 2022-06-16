@@ -1,6 +1,6 @@
 package builder
 
-// TODO: Improve this class
+// TODO: Improve this file
 type MarkDownBuilder interface {
 	Render() 	error
 }
