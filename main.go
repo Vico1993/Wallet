@@ -119,44 +119,44 @@ func main() {
 	historicData := getHistoricData()
 	markdown := builder.NewMarkDown([]builder.MarkDownData{
 		{
-			String: builder.NewMarkDowText("Wallet", "h1", nil),
+			Block: builder.NewMarkDowText("Wallet", "h1", nil),
 		},
 		{
-			String: builder.NewMarkDowText("At %s", "h2", util.TransformStringSliceIntoInterface([]string{today})),
+			Block: builder.NewMarkDowText("At %s", "h2", util.TransformStringSliceIntoInterface([]string{today})),
 		},
 		{
-			String: builder.NewMarkDowText("We found %s number of transaction in your wallet, here is a small Summary:", "text", util.TransformStringSliceIntoInterface([]string{
+			Block: builder.NewMarkDowText("We found %s number of transaction in your wallet, here is a small Summary:", "text", util.TransformStringSliceIntoInterface([]string{
 					strconv.Itoa(len(wallet.Transactions)),
 				}),
 			),
 		},
 		{
-			String: builder.NewMarkDowTable(
+			Block: builder.NewMarkDowTable(
 				[]string{"Asset", "Quantity", "By at", "By for (CAD)", "Price today", "Profit"},
 				transactions,
 			),
 		},
 		{
-			String: builder.NewMarkDowText("Resume by Crypto", "h1", nil),
+			Block: builder.NewMarkDowText("Resume by Crypto", "h1", nil),
 		},
 		{
-			String: builder.NewMarkDowTable(
+			Block: builder.NewMarkDowTable(
 				[]string{"Symbol", "Profit", "Quantity"},
 				details,
 			),
 		},
 		{
-			String: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3", util.TransformStringSliceIntoInterface([]string{
+			Block: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3", util.TransformStringSliceIntoInterface([]string{
 					util.FormatFloat(stats.GetTotalInvest()),
 					util.FormatFloat(stats.GetTotalProfit()),
 				}),
 			),
 		},
 		{
-			String: builder.NewMarkDowText("Historic of Profit", "h1", nil),
+			Block: builder.NewMarkDowText("Historic of Profit", "h1", nil),
 		},
 		{
-			String: builder.NewGraph(
+			Block: builder.NewGraph(
 				[]asciigraph.Option{
 					asciigraph.SeriesColors(
 						asciigraph.Red,
@@ -168,7 +168,7 @@ func main() {
 			),
 		},
 		{
-			String: builder.NewMarkDowText("From %s to %s", "h2", util.TransformStringSliceIntoInterface([]string{
+			Block: builder.NewMarkDowText("From %s to %s", "h2", util.TransformStringSliceIntoInterface([]string{
 					getFirstDateOfHistoric(),
 					today,
 				}),

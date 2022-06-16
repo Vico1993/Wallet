@@ -6,7 +6,7 @@ type MarkDownBuilder interface {
 }
 
 type MarkDownData struct {
-	String 		MarkDownBuilder
+	Block 		MarkDownBuilder
 }
 
 type MarkDown struct {
@@ -21,9 +21,7 @@ func NewMarkDown(d []MarkDownData) MarkDownBuilder {
 
 func (m MarkDown) Render() error {
 	for _, element := range m.data {
-		var err error
-
-		err = element.String.Render()
+		err := element.Block.Render()
 		if err != nil {
 			return err
 		}
