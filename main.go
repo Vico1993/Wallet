@@ -117,7 +117,7 @@ func main() {
 	}
 
 	historicData := getHistoricData()
-	markdown := builder.NewMarkDown([]builder.MarkDownData{
+	markdown := builder.NewMarkDown([]builder.Data{
 		{
 			Block: builder.NewMarkDowText("Wallet", "h1", nil),
 		},

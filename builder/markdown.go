@@ -5,15 +5,15 @@ type MarkDownBuilder interface {
 	Render() 	error
 }
 
-type MarkDownData struct {
+type Data struct {
 	Block 		MarkDownBuilder
 }
 
 type MarkDown struct {
-	data []MarkDownData
+	data []Data
 }
 
-func NewMarkDown(d []MarkDownData) MarkDownBuilder {
+func NewMarkDown(d []Data) MarkDownBuilder {
 	return &MarkDown{
 		data: d,
 	}
