@@ -35,7 +35,7 @@ func TransformStringSliceIntoInterface(list []string) []interface{} {
 }
 
 func TransformStringToFloat(str string) float64 {
-	flt, err := strconv.ParseFloat(str, 10)
+	flt, err := strconv.ParseFloat(str, 64)
 	if (err != nil ) {
 		log.Fatalln( "Error parsing Float: ", err.Error())
 	}

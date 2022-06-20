@@ -1,19 +1,18 @@
 package service
 
 import (
+	"Vico1993/Wallet/domain"
 	"Vico1993/Wallet/util"
-	"fmt"
-	"log"
 	"os"
 )
 
 const (
 	CRYPTO_PURCHASE = "crypto_purchase"
 	CRYPTO_EXCHANGE = "crypto_exchange"
+	CRYPTO_EARN = "crypto_earn_interest_paid"
 )
 
-
-type CSVStruct struct {
+type cryptoCSV struct {
 	Timestamp string
 	Description string
 	Currency string
@@ -27,26 +26,63 @@ type CSVStruct struct {
 	TransactionHash string
 }
 
-func InitCryptoCom() {
-	data := loadInformations()
-
-	for k, d := range util.ReverseSlice(data) {
-		fmt.Println(d.Timestamp, k)
-	}
-
-	log.Fatalln("STOP DEV PROGRESS")
+type CryptoCom struct {
+	CsvPath string
 }
 
-func loadInformations() []CSVStruct {
-	var data []CSVStruct
+func NewCryptoCom() Exchange {
+	return CryptoCom{
+		CsvPath: os.Getenv("CSV_CRYPTO_COM"),
+	}
+}
+
+func (c CryptoCom) Load() (domain.Wallet, error) {
+	var wallet domain.Wallet
+	csvData, err := c.readCryptoComCSV()
+	if err != nil {
+		return domain.Wallet{}, err
+	}
+
+	for _, d := range util.ReverseSlice(csvData) {
+		var tpe string
+
+		switch d.TransactionKind {
+			case CRYPTO_PURCHASE:
+				tpe = domain.PURCHASE
+			case CRYPTO_EXCHANGE:
+				tpe = domain.EXCHANGE
+			case CRYPTO_EARN:
+				tpe = domain.EARN
+		}
+
+		wallet.AddOperation(
+			domain.NewOperation(
+				d.NativeAmount,
+				d.Timestamp,
+				d.Amount,
+				d.Currency,
+				0.0,
+				tpe,
+				"crypto.com",
+				tpe,
+			),
+		)
+	}
+
+	return wallet, nil
+}
+
+func (c CryptoCom) readCryptoComCSV() ([]cryptoCSV, error) {
+	var data []cryptoCSV
+
 	// TODO: Remove the CSV link from the ENV once the dev is complete
-	rows, err := util.ReadCsv(os.Getenv("CSV_CRYPTO_COM"))
+	rows, err := util.ReadCsv(c.CsvPath)
 	if (err != nil ) {
-		log.Fatalln("Error reading the CSV", err.Error())
+		return nil, err
 	}
 
 	for _, row := range rows {
-		data = append(data, CSVStruct{
+		data = append(data, cryptoCSV{
 			Timestamp: row[0],
 			Description: row[1],
 			Currency: row[2],
@@ -61,5 +97,5 @@ func loadInformations() []CSVStruct {
 		})
 	}
 
-	return data
+	return data, nil
 }
