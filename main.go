@@ -77,6 +77,8 @@ func main() {
 		log.Fatalf("Error loading .env file")
 	}
 
+	service.InitCryptoCom()
+
 	wallet := GetData()
 	var transactions [][]string
 	for _, transaction := range wallet.Transactions {

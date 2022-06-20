@@ -1,6 +1,7 @@
 package service
 
 import (
+	"Vico1993/Wallet/domain"
 	"Vico1993/Wallet/util"
 	"fmt"
 	"log"
@@ -27,11 +28,24 @@ type CSVStruct struct {
 	TransactionHash string
 }
 
+var wallet domain.Wallet
+
 func InitCryptoCom() {
 	data := loadInformations()
 
 	for k, d := range util.ReverseSlice(data) {
 		fmt.Println(d.Timestamp, k)
+
+		switch d.TransactionKind {
+			case CRYPTO_PURCHASE:
+				wallet.Transactions = append(wallet.Transactions, domain.Transaction{
+					Price: d.NativeAmount,
+					Date: d.Timestamp,
+					Quantity: d.Amount,
+					Asset: d.Currency,
+				})
+		}
+
 	}
 
 	log.Fatalln("STOP DEV PROGRESS")
