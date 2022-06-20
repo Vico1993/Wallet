@@ -5,6 +5,7 @@ import (
 	"Vico1993/Wallet/domain"
 	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -76,8 +77,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
-
-	service.InitCryptoCom()
 
 	wallet := GetData()
 	var transactions [][]string
@@ -182,4 +181,16 @@ func main() {
 	if err != nil {
 		log.Fatalln("Error building the Markdown", err.Error())
 	}
+
+	// Crypto.com load
+	cryto := service.NewCryptoCom()
+	cWallet, err := cryto.Load()
+	if err != nil {
+		log.Fatalln("Error with Crypto.com", err.Error())
+	}
+
+	fmt.Println(
+		"Operations Load",
+		len(cWallet.GetOperations()),
+	)
 }
