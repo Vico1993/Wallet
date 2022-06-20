@@ -1,6 +1,7 @@
 package util
 
 import (
+	"log"
 	"math"
 	"strconv"
 )
@@ -31,4 +32,21 @@ func TransformStringSliceIntoInterface(list []string) []interface{} {
 	}
 
 	return vals
+}
+
+func TransformStringToFloat(str string) float64 {
+	flt, err := strconv.ParseFloat(str, 10)
+	if (err != nil ) {
+		log.Fatalln( "Error parsing Float: ", err.Error())
+	}
+
+	return flt
+}
+
+func ReverseSlice[S ~[]E, E any](s S) S {
+    for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+        s[i], s[j] = s[j], s[i]
+    }
+
+	return s
 }
