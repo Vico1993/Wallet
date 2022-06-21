@@ -181,16 +181,12 @@ func main() {
 		log.Fatalln("Error building the Markdown", err.Error())
 	}
 
-	// Crypto.com load
+	// // Crypto.com load
 	// cryto := service.NewCryptoCom()
 	// cWallet, err := cryto.Load()
 	// if err != nil {
 	// 	log.Fatalln("Error with Crypto.com", err.Error())
 	// }
 
-	// fmt.Println(cWallet.GetTotalForUnit("ERD"))
-
-	// for _, o := range cWallet.GetOperations() {
-	// 	fmt.Println(o)
-	// }
+	// fmt.Println(cWallet.GetQuantityByUnit("BTC"))
 }

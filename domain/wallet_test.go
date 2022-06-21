@@ -93,3 +93,33 @@ func TestGetTotalForUnitWithUnitButExchangeLater(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal( t, 0.05, resultBTC )
 }
+
+func TestGetTotalForUnitWithAfterAnAddOperation(t *testing.T) {
+	result, err := wallet.GetQuantityByUnit("EGLD")
+
+	assert.EqualError(t, err, "Unit not found in the wallet", "Error doesn't match the expected")
+	assert.Equal(
+		t,
+		float64(0),
+		result,
+	)
+
+	wallet.AddOperation(
+		NewOperation(
+			"2022-06-19",
+			1,
+			"EGLD",
+			0,
+			"fiat",
+			10.0,
+			10.0,
+			"CAD",
+			PURCHASE,
+			"test",
+		),
+	)
+
+	result, err = wallet.GetQuantityByUnit("EGLD")
+	assert.Nil(t, err)
+	assert.Equal(t, float64(1), result)
+}

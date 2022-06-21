@@ -21,61 +21,53 @@ type Wallet struct {
 }
 
 func NewWallet(o []Operation, t ...string) Wallet {
-	units := make(map[string]unitDetail)
+	wallet := Wallet{
+		operations: o,
+		tag: t,
+		units: make(map[string]unitDetail),
+	}
 
-	// Kind of Ugly
 	for _, operation := range o {
-		unit := strings.ToLower(operation.unit)
+		// Handle each operation one by one
+		wallet.handleOperation(operation)
+	}
 
-		switch operation.oType {
-			case PURCHASE:
-				if entry, ok := units[unit]; ok {
-					entry.quantity += operation.quantity
+	return wallet
+}
 
-					units[unit] = entry
-				} else {
-					units[unit] = unitDetail{
-						quantity: operation.quantity,
-						symbol: unit,
-					}
-				}
-				break
-			case EXCHANGE:
-				// Remove from old
-				if entry, ok := units[strings.ToLower(operation.from)]; ok {
-					entry.quantity -= operation.fromQuantity
+func (w *Wallet) handleOperation(o Operation) {
+	// In case NewWallet is not use
+	if w.units == nil {
+		w.units = make(map[string]unitDetail)
+	}
 
-					units[strings.ToLower(operation.from)] = entry
-				} else {
-					// ???
-				}
+	unit := strings.ToLower(o.unit)
+	from := strings.ToLower(o.from)
 
-				// Add from other
-				if entry, ok := units[unit]; ok {
-					entry.quantity += operation.quantity
+	if entry, ok := w.units[unit]; ok {
+		entry.quantity += o.quantity
 
-					units[unit] = entry
-				} else {
-					units[unit] = unitDetail{
-						quantity: operation.quantity,
-						symbol: unit,
-					}
-				}
-				break
+		w.units[unit] = entry
+	} else {
+		w.units[unit] = unitDetail{
+			quantity: o.quantity,
+			symbol: unit,
 		}
 	}
 
-	return Wallet{
-		operations: o,
-		tag: t,
-		units: units,
+	if o.oType == EXCHANGE {
+		w.units[from] = unitDetail{
+			quantity: w.units[from].quantity - o.fromQuantity,
+			symbol: w.units[from].symbol,
+		}
 	}
 }
 
-// Will be use for statistic later
-// Act upon the Operation type
 func (w *Wallet) AddOperation(ope Operation) {
 	w.operations = append(w.operations, ope)
+
+	// Update the unit key
+	w.handleOperation(ope)
 }
 
 func (w Wallet) GetQuantityByUnit(unit string) (float64, error) {
