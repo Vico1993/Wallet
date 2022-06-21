@@ -18,7 +18,7 @@ type cryptoCSV struct {
 	Currency string
 	Amount float64
 	ToCurrency string
-	ToAmount string
+	ToAmount float64
 	NativeCurrency string
 	NativeAmount float64
 	NativeAmountUSD float64
@@ -45,23 +45,42 @@ func (c CryptoCom) Load() (domain.Wallet, error) {
 
 	for _, d := range util.ReverseSlice(csvData) {
 		var tpe string
+		var unit string
+		var from string
+		var fromQuantity float64
+		var quantity float64
 
 		switch d.TransactionKind {
 			case CRYPTO_PURCHASE:
+				unit = d.Currency
+				// Hard code for now
+				from = "CAD"
+				quantity = d.Amount
+				fromQuantity = d.NativeAmount
 				tpe = domain.PURCHASE
 			case CRYPTO_EXCHANGE:
+				unit = d.ToCurrency
+				from = d.Currency
+				fromQuantity = d.Amount
+				quantity = d.ToAmount
 				tpe = domain.EXCHANGE
 			case CRYPTO_EARN:
 				tpe = domain.EARN
+			default:
+				// If not supported for the moment, skip
+				continue;
 		}
 
 		wallet.AddOperation(
 			domain.NewOperation(
-				d.NativeAmount,
 				d.Timestamp,
-				d.Amount,
-				d.Currency,
-				0.0,
+				quantity,
+				unit,
+				0,
+				from,
+				fromQuantity,
+				d.NativeAmount,
+				"CAD",
 				tpe,
 				"crypto.com",
 				tpe,
@@ -88,7 +107,7 @@ func (c CryptoCom) readCryptoComCSV() ([]cryptoCSV, error) {
 			Currency: row[2],
 			Amount: util.TransformStringToFloat(row[3]),
 			ToCurrency: row[4],
-			ToAmount: row[5],
+			ToAmount: util.TransformStringToFloat(row[5]),
 			NativeCurrency: row[6],
 			NativeAmount: util.TransformStringToFloat(row[7]),
 			NativeAmountUSD: util.TransformStringToFloat(row[8]),

@@ -5,7 +5,6 @@ import (
 	"Vico1993/Wallet/domain"
 	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -183,14 +182,15 @@ func main() {
 	}
 
 	// Crypto.com load
-	cryto := service.NewCryptoCom()
-	cWallet, err := cryto.Load()
-	if err != nil {
-		log.Fatalln("Error with Crypto.com", err.Error())
-	}
+	// cryto := service.NewCryptoCom()
+	// cWallet, err := cryto.Load()
+	// if err != nil {
+	// 	log.Fatalln("Error with Crypto.com", err.Error())
+	// }
 
-	fmt.Println(
-		"Operations Load",
-		len(cWallet.GetOperations()),
-	)
+	// fmt.Println(cWallet.GetTotalForUnit("ERD"))
+
+	// for _, o := range cWallet.GetOperations() {
+	// 	fmt.Println(o)
+	// }
 }

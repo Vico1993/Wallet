@@ -6,30 +6,36 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewOperationWithoutAssetPrice(t *testing.T) {
+func TestNewOperationWithoutUnitPrice(t *testing.T) {
 	ope := NewOperation(
-		10.0,
 		"2022-06-19",
 		0.1,
 		"BTC",
 		0,
+		"fiat",
+		10.0,
+		10.0,
+		"CAD",
 		PURCHASE,
 		"test",
 	)
 
-	assert.Equal(t, 100.0, ope.GetAssetPrice())
+	assert.Equal(t, 100.0, ope.GetUnitPrice())
 }
 
-func TestNewOperationWithAssetPrice(t *testing.T) {
-		ope := NewOperation(
-		10.0,
+func TestNewOperationWithUnitPrice(t *testing.T) {
+	ope := NewOperation(
 		"2022-06-19",
 		0.1,
 		"BTC",
 		200,
+		"fiat",
+		10.0,
+		10.0,
+		"CAD",
 		PURCHASE,
 		"test",
 	)
 
-	assert.Equal(t, 200.0, ope.GetAssetPrice())
+	assert.Equal(t, 200.0, ope.GetUnitPrice())
 }
