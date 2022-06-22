@@ -10,7 +10,7 @@ import (
 var v = viper.GetViper()
 
 // Save Array of Operations with what we have in data.json
-func SaveOperations(operations []wallet.Operation) {
+func SaveOperations(operations ...wallet.Operation) {
 	// v.Set(
 	// 	"operations",
 	// 	append(
