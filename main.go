@@ -2,7 +2,7 @@ package main
 
 import (
 	"Vico1993/Wallet/domain/config"
-	"Vico1993/Wallet/service"
+	"Vico1993/Wallet/service/cryptocom"
 	"Vico1993/Wallet/util"
 	"fmt"
 	"log"
@@ -74,8 +74,8 @@ func main() {
 	}
 
 	// Crypto.com load
-	cryto := service.NewCryptoCom()
-	cWallet, err := cryto.Load()
+	crypto := cryptocom.NewCryptoCom()
+	cWallet, err := crypto.Load()
 	if err != nil {
 		log.Fatalln("Error with Crypto.com", err.Error())
 	}
@@ -86,7 +86,7 @@ func main() {
 		fmt.Println(r)
 	}
 
-	config.SaveOperations(cWallet.GetOperations())
+	config.SaveOperations(cWallet.GetOperations()...)
 
 	fmt.Println("AFTER")
 

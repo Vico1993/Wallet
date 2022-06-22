@@ -24,7 +24,7 @@ func SaveOperations(operations ...wallet.Operation) {
 
 	err := v.WriteConfig()
 	if err != nil {
-		log.Fatalln("Error saving operations")
+		log.Fatalln("Error saving operations: ", err.Error())
 	}
 }
 

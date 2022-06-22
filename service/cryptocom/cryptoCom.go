@@ -1,10 +1,18 @@
-package service
+package cryptocom
 
 import (
 	"Vico1993/Wallet/domain/wallet"
+	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
+	"fmt"
+	"log"
 	"os"
+	"strconv"
+
+	"github.com/mitchellh/hashstructure/v2"
 )
+
+// TODO: Clean this file because its TOO MESSY
 
 const (
 	CRYPTO_PURCHASE = "crypto_purchase"
@@ -30,13 +38,15 @@ type CryptoCom struct {
 	CsvPath string
 }
 
-func NewCryptoCom() Exchange {
+func NewCryptoCom() service.Exchange {
 	return CryptoCom{
 		CsvPath: os.Getenv("CSV_CRYPTO_COM"),
 	}
 }
 
 func (c CryptoCom) Load() (wallet.Wallet, error) {
+	config := newCryptoComConfig()
+
 	csvData, err := c.readCryptoComCSV()
 	if err != nil {
 		return wallet.Wallet{}, err
@@ -45,6 +55,21 @@ func (c CryptoCom) Load() (wallet.Wallet, error) {
 	var operations []wallet.Operation
 	for _, d := range util.ReverseSlice(csvData) {
 		var tpe string
+
+		rowHash, err := hashstructure.Hash(d, hashstructure.FormatV2, nil)
+		if err != nil {
+			log.Println("Couldn't generate hash for CSV row: ", err.Error())
+			log.Println(d)
+		}
+
+		// if already in the json, continue
+		if util.IsInStringSlice(strconv.FormatUint(rowHash, 10), config.Operations_hash) {
+			fmt.Println("Already parsed")
+			continue
+		} else {
+			fmt.Println("New")
+			config.addHash(strconv.FormatUint(rowHash, 10))
+		}
 
 		// Hard code for now
 		from := "CAD"
@@ -85,6 +110,8 @@ func (c CryptoCom) Load() (wallet.Wallet, error) {
 			),
 		)
 	}
+
+	config.save()
 
 	return wallet.NewWallet(operations, "Crypto.com"), nil
 }
