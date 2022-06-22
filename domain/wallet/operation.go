@@ -1,4 +1,4 @@
-package domain
+package wallet
 
 var (
 	PURCHASE = "purchase"
@@ -7,16 +7,16 @@ var (
 )
 
 type Operation struct {
-	date 			string
-	quantity 		float64
-	unit 			string
-	unitPrice		float64
-	from 			string
-	fromQuantity	float64
-	price 			float64
-	fiat 			string
-	oType			string
-	tag 			[]string
+	Date 			string 		`json:"date"`
+	Quantity 		float64 	`json:"quantity"`
+	Unit 			string 		`json:"unit"`
+	UnitPrice		float64 	`json:"unitPrice"`
+	From 			string  	`json:"from"`
+	FromQuantity	float64		`json:"fromQuantity"`
+	Price 			float64		`json:"price"`
+	Fiat 			string		`json:"fiat"`
+	OType			string		`json:"otype"`
+	Tag 			[]string	`json:"tag"`
 }
 
 func NewOperation(
@@ -36,20 +36,20 @@ func NewOperation(
 	}
 
 	return Operation{
-		date: date,
-		quantity: quantity,
-		unit: unit,
-		unitPrice: unitPrice,
-		from: from,
-		fromQuantity: fromQuantity,
-		price: price,
-		fiat: fiat,
-		oType: operationType,
-		tag: tag,
+		Date: date,
+		Quantity: quantity,
+		Unit: unit,
+		UnitPrice: unitPrice,
+		From: from,
+		FromQuantity: fromQuantity,
+		Price: price,
+		Fiat: fiat,
+		OType: operationType,
+		Tag: tag,
 	}
 }
 
 func (o Operation) GetUnitPrice() float64 {
-	return o.unitPrice
+	return o.UnitPrice
 }
 

@@ -1,7 +1,7 @@
 package service
 
-import "Vico1993/Wallet/domain"
+import "Vico1993/Wallet/domain/wallet"
 
 type Exchange interface {
-	Load() (domain.Wallet, error)
+	Load() (wallet.Wallet, error)
 }

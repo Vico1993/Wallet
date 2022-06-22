@@ -1,7 +1,10 @@
 package main
 
 import (
+	"Vico1993/Wallet/domain/config"
+	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -62,21 +65,34 @@ func getFirstDateOfHistoric() string {
 
 func main() {
 	// Create a home directory to save some basic information
-	InitConfig()
+	config.InitConfig()
 
 	// load .env file
 	err := godotenv.Load(".env")
-
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 
-	// // Crypto.com load
-	// cryto := service.NewCryptoCom()
-	// cWallet, err := cryto.Load()
-	// if err != nil {
-	// 	log.Fatalln("Error with Crypto.com", err.Error())
-	// }
+	// Crypto.com load
+	cryto := service.NewCryptoCom()
+	cWallet, err := cryto.Load()
+	if err != nil {
+		log.Fatalln("Error with Crypto.com", err.Error())
+	}
+
+	fmt.Println("BEFORE")
+
+	for _, r := range cWallet.GetOperations() {
+		fmt.Println(r)
+	}
+
+	config.SaveOperations(cWallet.GetOperations())
+
+	fmt.Println("AFTER")
+
+	for _, ope := range config.LoadOperations() {
+		fmt.Println(ope)
+	}
 
 	// fmt.Println(cWallet.GetQuantityByUnit("BTC"))
 }

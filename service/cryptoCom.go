@@ -1,7 +1,7 @@
 package service
 
 import (
-	"Vico1993/Wallet/domain"
+	"Vico1993/Wallet/domain/wallet"
 	"Vico1993/Wallet/util"
 	"os"
 )
@@ -36,13 +36,13 @@ func NewCryptoCom() Exchange {
 	}
 }
 
-func (c CryptoCom) Load() (domain.Wallet, error) {
+func (c CryptoCom) Load() (wallet.Wallet, error) {
 	csvData, err := c.readCryptoComCSV()
 	if err != nil {
-		return domain.Wallet{}, err
+		return wallet.Wallet{}, err
 	}
 
-	var operations []domain.Operation
+	var operations []wallet.Operation
 	for _, d := range util.ReverseSlice(csvData) {
 		var tpe string
 
@@ -54,15 +54,15 @@ func (c CryptoCom) Load() (domain.Wallet, error) {
 
 		switch d.TransactionKind {
 			case CRYPTO_EARN:
-				tpe = domain.EARN
+				tpe = wallet.EARN
 			case CRYPTO_PURCHASE:
-				tpe = domain.PURCHASE
+				tpe = wallet.PURCHASE
 			case CRYPTO_EXCHANGE:
 				unit = d.ToCurrency
 				from = d.Currency
 				fromQuantity = d.Amount
 				quantity = d.ToAmount
-				tpe = domain.EXCHANGE
+				tpe = wallet.EXCHANGE
 			default:
 				// If not supported for the moment, skip
 				continue;
@@ -70,7 +70,7 @@ func (c CryptoCom) Load() (domain.Wallet, error) {
 
 		operations = append(
 			operations,
-			domain.NewOperation(
+			wallet.NewOperation(
 				d.Timestamp,
 				quantity,
 				unit,
@@ -86,7 +86,7 @@ func (c CryptoCom) Load() (domain.Wallet, error) {
 		)
 	}
 
-	return domain.NewWallet(operations, "Crypto.com"), nil
+	return wallet.NewWallet(operations, "Crypto.com"), nil
 }
 
 func (c CryptoCom) readCryptoComCSV() ([]cryptoCSV, error) {

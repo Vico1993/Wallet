@@ -1,4 +1,4 @@
-package domain
+package wallet
 
 import (
 	"errors"
@@ -38,23 +38,23 @@ func (w *Wallet) handleOperation(o Operation) {
 		w.units = make(map[string]unitDetail)
 	}
 
-	unit := strings.ToLower(o.unit)
-	from := strings.ToLower(o.from)
+	unit := strings.ToLower(o.Unit)
+	from := strings.ToLower(o.From)
 
 	if entry, ok := w.units[unit]; ok {
-		entry.quantity += o.quantity
+		entry.quantity += o.Quantity
 
 		w.units[unit] = entry
 	} else {
 		w.units[unit] = unitDetail{
-			quantity: o.quantity,
+			quantity: o.Quantity,
 			symbol: unit,
 		}
 	}
 
-	if o.oType == EXCHANGE {
+	if o.OType == EXCHANGE {
 		w.units[from] = unitDetail{
-			quantity: w.units[from].quantity - o.fromQuantity,
+			quantity: w.units[from].quantity - o.FromQuantity,
 			symbol: w.units[from].symbol,
 		}
 	}
@@ -73,4 +73,8 @@ func (w Wallet) GetQuantityByUnit(unit string) (float64, error) {
 	} else {
 		return 0, errors.New("Unit not found in the wallet")
 	}
+}
+
+func (w Wallet) GetOperations() []Operation {
+	return w.operations
 }
