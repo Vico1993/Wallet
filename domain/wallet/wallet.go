@@ -12,9 +12,6 @@ type unitDetail struct {
 }
 
 type Wallet struct {
-	// To not break everything
-	Transactions 	[]Transaction
-
 	operations 		[]Operation
 	tag 			[]string
 	units 			map[string]unitDetail

@@ -3,7 +3,7 @@ default: build lint
 .PHONY: build debug_run run test lint
 
 build:
-	@ go build .
+	@ go build -o exWallet .
 	@ echo "Build done 🛠"
 
 debug:
