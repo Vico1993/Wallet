@@ -1,7 +1,6 @@
 package cryptocom
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/spf13/viper"
@@ -26,8 +25,6 @@ func (c *cryptoComConfig) addHash(h string) {
 }
 
 func (c cryptoComConfig) save() {
-	fmt.Println(c.Operations_hash)
-
 	v.Set("crypto_com_config", c)
 
 	err := v.WriteConfig()

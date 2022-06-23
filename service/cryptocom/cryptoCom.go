@@ -4,7 +4,6 @@ import (
 	"Vico1993/Wallet/domain/wallet"
 	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -45,17 +44,14 @@ func NewCryptoCom() service.Exchange {
 }
 
 func (c CryptoCom) Load() (wallet.Wallet, error) {
-	config := newCryptoComConfig()
-
 	csvData, err := c.readCryptoComCSV()
 	if err != nil {
 		return wallet.Wallet{}, err
 	}
 
+	config := newCryptoComConfig()
 	var operations []wallet.Operation
 	for _, d := range util.ReverseSlice(csvData) {
-		var tpe string
-
 		rowHash, err := hashstructure.Hash(d, hashstructure.FormatV2, nil)
 		if err != nil {
 			log.Println("Couldn't generate hash for CSV row: ", err.Error())
@@ -64,50 +60,14 @@ func (c CryptoCom) Load() (wallet.Wallet, error) {
 
 		// if already in the json, continue
 		if util.IsInStringSlice(strconv.FormatUint(rowHash, 10), config.Operations_hash) {
-			fmt.Println("Already parsed")
 			continue
 		} else {
-			fmt.Println("New")
 			config.addHash(strconv.FormatUint(rowHash, 10))
-		}
-
-		// Hard code for now
-		from := "CAD"
-		unit := d.Currency
-		quantity := d.Amount
-		fromQuantity := d.NativeAmount
-
-		switch d.TransactionKind {
-			case CRYPTO_EARN:
-				tpe = wallet.EARN
-			case CRYPTO_PURCHASE:
-				tpe = wallet.PURCHASE
-			case CRYPTO_EXCHANGE:
-				unit = d.ToCurrency
-				from = d.Currency
-				fromQuantity = d.Amount
-				quantity = d.ToAmount
-				tpe = wallet.EXCHANGE
-			default:
-				// If not supported for the moment, skip
-				continue;
 		}
 
 		operations = append(
 			operations,
-			wallet.NewOperation(
-				d.Timestamp,
-				quantity,
-				unit,
-				0,
-				from,
-				fromQuantity,
-				d.NativeAmount,
-				"CAD",
-				tpe,
-				"crypto.com",
-				tpe,
-			),
+			*buildOperations(d),
 		)
 	}
 
