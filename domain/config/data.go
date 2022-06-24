@@ -32,7 +32,10 @@ func SaveOperations(operations ...wallet.Operation) {
 func LoadOperations() []wallet.Operation {
 	var operations []wallet.Operation
 
-	v.UnmarshalKey("operations", &operations)
+	err := v.UnmarshalKey("operations", &operations)
+	if err != nil {
+		log.Fatalln("Error loading operations: ", err.Error())
+	}
 
 	return operations
 }

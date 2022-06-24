@@ -15,7 +15,10 @@ type cryptoComConfig struct {
 func newCryptoComConfig() cryptoComConfig {
 	var config cryptoComConfig
 
-	v.UnmarshalKey("crypto_com_config", &config)
+	err := v.UnmarshalKey("crypto_com_config", &config)
+	if err != nil {
+		log.Fatalln("Error loading the config:", err.Error())
+	}
 
 	return config
 }
