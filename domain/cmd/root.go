@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/spf13/cobra"
@@ -17,7 +16,9 @@ func InitRootCommand(stdout, stderr io.Writer) *cobra.Command {
 		SilenceErrors: true,
 	}
 
-	fmt.Println("In Root Command")
+	flags := &flags{}
+
+	rootCmd.AddCommand(addCommand(flags))
 
 	rootCmd.SetOut(stdout)
 	rootCmd.SetErr(stderr)
