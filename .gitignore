@@ -2,6 +2,6 @@ data.json
 
 .env
 
-exWallet
+/wallet
 
 *.csv
