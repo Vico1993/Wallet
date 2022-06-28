@@ -8,7 +8,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/miguelmota/go-coinmarketcap v0.1.8
 	github.com/spf13/viper v1.12.0
-	github.com/stretchr/testify v1.7.2
+	github.com/stretchr/testify v1.7.5
 )
 
 require (
