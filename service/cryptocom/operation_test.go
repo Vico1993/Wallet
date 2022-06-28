@@ -34,7 +34,7 @@ func TestBuildOperationEarnTransaction(t *testing.T) {
 			FromQuantity: 100,
 			Fiat: "CAD",
 			OType: wallet.EARN,
-			Tag: []string{"crypto.com", wallet.PURCHASE},
+			Tag: []string{"crypto.com", wallet.EARN},
 		},
 		result,
 	)

@@ -90,6 +90,18 @@ func TestTextBuildTextWithVariable(t *testing.T) {
 	assert.Equal(t, "blabl toto", result, "The result string should be an empty string")
 }
 
+func TestTextBuildTextWithVariableNueric(t *testing.T) {
+	mkText := markDownText{
+		cType: "text",
+		data: []interface{}{7},
+		content: "blabl %d",
+	}
+	result, err := mkText.Build()
+
+	assert.Nil(t, err)
+	assert.Equal(t, "blabl 7", result, "The result string should be an empty string")
+}
+
 func TestTextBuildList(t *testing.T) {
 	mkText := markDownText{
 		cType: "list",

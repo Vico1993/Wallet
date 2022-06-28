@@ -98,7 +98,7 @@ func (t markDownText) Build() (string, error) {
 		}
 	}
 
-	paramMatch := regexp.MustCompile("%s")
+	paramMatch := regexp.MustCompile("%s|%d")
 	if paramMatch.FindString(renderString) != "" && t.data != nil {
 		renderString = fmt.Sprintf(
 			renderString,

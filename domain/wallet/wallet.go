@@ -3,7 +3,11 @@ package wallet
 import (
 	"errors"
 	"strings"
+
+	"github.com/spf13/viper"
 )
+
+var v = viper.GetViper()
 
 type unitDetail struct {
 	symbol  string
@@ -77,4 +81,33 @@ func (w Wallet) GetQuantityByUnit(unit string) (float64, error) {
 
 func (w Wallet) GetOperations() []Operation {
 	return w.operations
+}
+
+func (w Wallet) Save() error {
+	// if no operations to save, do nothing
+	if len(w.operations) == 0 {
+		return nil
+	}
+
+	var oldOperations []Operation
+
+	err := v.UnmarshalKey("operations", &oldOperations)
+	if err != nil {
+		return errors.New("Error saving operations: " + err.Error())
+	}
+
+	v.Set(
+		"operations",
+		append(
+			w.operations,
+			oldOperations...
+		),
+	)
+
+	err = v.WriteConfig()
+	if err != nil {
+		return errors.New("Error saving operations: " + err.Error())
+	}
+
+	return nil
 }

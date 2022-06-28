@@ -5,7 +5,6 @@ import (
 	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
 	"log"
-	"os"
 	"strconv"
 
 	"github.com/mitchellh/hashstructure/v2"
@@ -37,9 +36,9 @@ type CryptoCom struct {
 	CsvPath string
 }
 
-func NewCryptoCom() service.Exchange {
+func NewCryptoCom(path string) service.Exchange {
 	return CryptoCom{
-		CsvPath: os.Getenv("CSV_CRYPTO_COM"),
+		CsvPath: path,
 	}
 }
 

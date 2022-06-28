@@ -1,5 +1,6 @@
 package cmd
 
 type flags struct {
-	addListExchange bool
+	// addCryptoCom bool
+	addFilePath string
 }
