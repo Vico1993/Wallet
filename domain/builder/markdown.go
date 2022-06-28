@@ -19,6 +19,10 @@ func NewMarkDown(d []Data) MarkDownBuilder {
 	}
 }
 
+func (m *MarkDown) AddData(d Data) {
+	m.data = append(m.data, d)
+}
+
 func (m MarkDown) Render() error {
 	for _, element := range m.data {
 		err := element.Block.Render()
