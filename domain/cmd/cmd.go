@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"Vico1993/Wallet/domain/builder"
 	"os"
 )
 
+var markdown builder.MarkDown
 func Execute() {
 	rootCmd := InitRootCommand(os.Stdout, os.Stderr)
 

@@ -19,6 +19,7 @@ func InitRootCommand(stdout, stderr io.Writer) *cobra.Command {
 	flags := &flags{}
 
 	rootCmd.AddCommand(addCommand(flags))
+	rootCmd.AddCommand(listCommand(flags))
 
 	rootCmd.SetOut(stdout)
 	rootCmd.SetErr(stderr)

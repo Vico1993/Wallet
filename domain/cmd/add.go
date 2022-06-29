@@ -16,30 +16,30 @@ func addCommand(flags *flags) *cobra.Command {
 		Short: "Add operations to your wallet",
 		Long: "Add operations to your wallet base on your exchange.",
 		Run: func(cmd *cobra.Command, args []string) {
-			var markdown builder.MarkDown
-
 			if flags.addFilePath == "" {
 				markdown.AddData(builder.Data{
 					Block: builder.NewMarkDowText("We are missing the csv file path", "h1", nil),
 				})
-			} else {
-				w, err := handleCryptoCom(flags.addFilePath)
-				if err != nil {
-					log.Fatalln("Error Rendering the add command", err.Error())
-				}
 
-				if len(w.GetOperations()) == 0 {
-					markdown.AddData(builder.Data{
-						Block: builder.NewMarkDowText("No new operation found","italic", nil),
-					})
-				} else {
-					markdown.AddData(builder.Data{
-						Block: builder.NewMarkDowText("We load and save %d","italic", []interface{}{len(w.GetOperations())}),
-					})
-				}
+				return;
 			}
 
-			err := markdown.Render()
+			w, err := handleCryptoCom(flags.addFilePath)
+			if err != nil {
+				log.Fatalln("Error Rendering the add command", err.Error())
+			}
+
+			if len(w.GetOperations()) == 0 {
+				markdown.AddData(builder.Data{
+					Block: builder.NewMarkDowText("No new operation found","italic", nil),
+				})
+			} else {
+				markdown.AddData(builder.Data{
+					Block: builder.NewMarkDowText("We load and save %d","italic", []interface{}{len(w.GetOperations())}),
+				})
+			}
+
+			err = markdown.Render()
 			if err != nil {
 				log.Fatalln("Error Rendering the add command", err.Error())
 			}
