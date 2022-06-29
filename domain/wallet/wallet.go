@@ -1,7 +1,9 @@
 package wallet
 
 import (
+	"Vico1993/Wallet/util"
 	"errors"
+	"log"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -81,6 +83,31 @@ func (w Wallet) GetQuantityByUnit(unit string) (float64, error) {
 
 func (w Wallet) GetOperations() []Operation {
 	return w.operations
+}
+
+func (w Wallet) GetOperationsWithProfit() ([][]string, []string) {
+	var operations [][]string
+
+	for _, operation := range w.operations {
+		currentPrice, err := operation.GetCurrentUnitPrice()
+		if err != nil {
+			log.Printf("Error procession Unit: %s - %s", operation.Unit, err.Error())
+			continue
+		}
+
+		operations = append(operations, []string{
+			operation.Unit,
+			util.FormatFloat(operation.Quantity),
+			util.FormatFloat(operation.GetUnitPrice()),
+			util.FormatFloat(operation.Price),
+			util.FormatFloat(currentPrice),
+			util.FormatFloat(operation.GetProfit(currentPrice)) + "%",
+		})
+	}
+
+	return operations, []string{
+		"Unit", "Quantity", "Buy at", "Buy for (CAD)", "Current Price", "Profit",
+	}
 }
 
 func (w Wallet) Save() error {

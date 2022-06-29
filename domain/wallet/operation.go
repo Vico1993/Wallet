@@ -1,5 +1,7 @@
 package wallet
 
+import "Vico1993/Wallet/service"
+
 var (
 	PURCHASE = "purchase"
 	EXCHANGE = "exchange"
@@ -53,3 +55,15 @@ func (o Operation) GetUnitPrice() float64 {
 	return o.UnitPrice
 }
 
+func (o Operation) GetCurrentUnitPrice() (float64, error) {
+	value, err := service.GetAssetPrice(o.Unit)
+	if err != nil {
+		return 0, err
+	}
+
+	return value, nil
+}
+
+func (o Operation) GetProfit(latestPrice float64) float64 {
+	return calculProfit(o.Price, latestPrice)
+}

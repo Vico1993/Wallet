@@ -2,7 +2,6 @@ package cryptocom
 
 import (
 	"Vico1993/Wallet/domain/wallet"
-	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
 	"log"
 	"strconv"
@@ -36,7 +35,7 @@ type CryptoCom struct {
 	CsvPath string
 }
 
-func NewCryptoCom(path string) service.Exchange {
+func NewCryptoCom(path string) CryptoCom {
 	return CryptoCom{
 		CsvPath: path,
 	}

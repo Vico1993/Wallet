@@ -31,6 +31,14 @@ func listCommand(flags *flags) *cobra.Command {
 				Block: builder.NewMarkDowText("We found %d operations in your wallet, here is the data:", "text", []interface{}{len(w.GetOperations())}),
 			})
 
+			operations, header := w.GetOperationsWithProfit()
+			markdown.AddData(builder.Data{
+				Block: builder.NewMarkDowTable(
+					header,
+					operations,
+				),
+			})
+
 			err := markdown.Render()
 			if err != nil {
 				log.Fatalln("Error Rendering the add command", err.Error())

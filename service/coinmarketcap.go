@@ -12,6 +12,10 @@ var (
 )
 
 func GetAssetPrice(asset string) (float64, error) {
+	if os.Getenv("CMC_API_KEY") == "" {
+		return 0, errors.New("No CoinMarketCap API key found, please setup your .env")
+	}
+
 	// To avoid hitting CMC during development
 	if os.Getenv("DEBUG") == "1" {
 		prices["BTC"] = 50000.19
