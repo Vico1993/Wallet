@@ -1,9 +1,7 @@
 package wallet
 
 import (
-	"Vico1993/Wallet/util"
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -18,9 +16,11 @@ type unitDetail struct {
 }
 
 type Wallet struct {
-	operations 		[]Operation
-	tag 			[]string
-	units 			map[string]unitDetail
+	tag 				[]string
+	units 				map[string]unitDetail
+
+	operations 			[]Operation
+	operationsProfit    [][]string
 }
 
 func NewWallet(o []Operation, t ...string) Wallet {
@@ -64,6 +64,9 @@ func (w *Wallet) handleOperation(o Operation) {
 			symbol: w.units[from].symbol,
 		}
 	}
+
+	// Add operations to our Profits constants
+	w.operationsProfit = append(w.operationsProfit, o.WithProfit())
 }
 
 func (w *Wallet) AddOperation(ope Operation) {
@@ -85,29 +88,10 @@ func (w Wallet) GetOperations() []Operation {
 	return w.operations
 }
 
-func (w Wallet) GetOperationsWithProfit() ([][]string, []string) {
-	var operations [][]string
-
-	for _, operation := range w.operations {
-		currentPrice, err := operation.GetCurrentUnitPrice()
-		if err != nil {
-			log.Printf("Error procession Unit: %s - %s", operation.Unit, err.Error())
-			continue
-		}
-
-		operations = append(operations, []string{
-			operation.Unit,
-			util.FormatFloat(operation.Quantity),
-			util.FormatFloat(operation.GetUnitPrice()),
-			util.FormatFloat(operation.Price),
-			util.FormatFloat(currentPrice),
-			util.FormatFloat(operation.GetProfit(currentPrice)) + "%",
-		})
-	}
-
-	return operations, []string{
+func (w Wallet) GetProfitTable() ([]string, [][]string) {
+	return []string{
 		"Unit", "Quantity", "Buy at", "Buy for (CAD)", "Current Price", "Profit",
-	}
+	}, w.operationsProfit
 }
 
 func (w Wallet) Save() error {

@@ -1,6 +1,10 @@
 package wallet
 
-import "Vico1993/Wallet/service"
+import (
+	"Vico1993/Wallet/service"
+	"Vico1993/Wallet/util"
+	"log"
+)
 
 var (
 	PURCHASE = "purchase"
@@ -30,7 +34,7 @@ func NewOperation(
 	fromQuantity float64,
 	price float64,
 	fiat string,
-	operationType string,
+	oType string,
 	tag ...string,
 ) Operation {
 	if unitPrice == 0 {
@@ -46,16 +50,29 @@ func NewOperation(
 		FromQuantity: fromQuantity,
 		Price: price,
 		Fiat: fiat,
-		OType: operationType,
+		OType: oType,
 		Tag: tag,
 	}
 }
 
-func (o Operation) GetUnitPrice() float64 {
-	return o.UnitPrice
+func (o Operation) WithProfit() []string {
+	currentPrice, err := service.GetAssetPrice(o.Unit)
+	if err != nil {
+		log.Printf("Error procession Unit: %s - %s", o.Unit, err.Error())
+		currentPrice = 0
+	}
+
+	return []string{
+		o.Unit,
+		util.FormatFloat(o.Quantity),
+		util.FormatFloat(o.UnitPrice),
+		util.FormatFloat(o.Price),
+		util.FormatFloat(currentPrice),
+		util.FormatFloat(o.GetProfit(currentPrice)) + "%",
+	}
 }
 
-func (o Operation) GetCurrentUnitPrice() (float64, error) {
+func (o Operation) getCurrentUnitPrice() (float64, error) {
 	value, err := service.GetAssetPrice(o.Unit)
 	if err != nil {
 		return 0, err

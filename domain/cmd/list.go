@@ -31,13 +31,21 @@ func listCommand(flags *flags) *cobra.Command {
 				Block: builder.NewMarkDowText("We found %d operations in your wallet, here is the data:", "text", []interface{}{len(w.GetOperations())}),
 			})
 
-			operations, header := w.GetOperationsWithProfit()
+			header, operations := w.GetProfitTable()
 			markdown.AddData(builder.Data{
 				Block: builder.NewMarkDowTable(
 					header,
 					operations,
 				),
 			})
+
+			// markdown.AddData(builder.Data{
+			// 	Block: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3", util.TransformStringSliceIntoInterface([]string{
+			// 			util.FormatFloat(stats.GetTotalInvest()),
+			// 			util.FormatFloat(stats.GetTotalProfit()),
+			// 		}),
+			// 	),
+			// })
 
 			err := markdown.Render()
 			if err != nil {
