@@ -3,7 +3,6 @@ package wallet
 import (
 	"Vico1993/Wallet/util"
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -76,14 +75,10 @@ func (w *Wallet) handleOperation(o Operation) {
 	w.operationsProfit = append(w.operationsProfit, o.WithProfit())
 
 	// Total
-	currentUnitPrice, err := o.getCurrentUnitPrice()
-	if err != nil {
-		log.Printf("Impossible to retrieve operation current value: %s - %s", o.Unit, err.Error())
-		currentUnitPrice = 0
-	}
+	currentUnitPrice := o.getCurrentUnitPrice()
 
 	w.TotalInvest += o.Price
-	w.TotalValue += currentUnitPrice
+	w.TotalValue += o.GetCurrentPrice(currentUnitPrice)
 }
 
 func (w *Wallet) AddOperation(ope Operation) {

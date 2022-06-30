@@ -67,18 +67,23 @@ func (o Operation) WithProfit() []string {
 		util.FormatFloat(o.Quantity),
 		util.FormatFloat(o.UnitPrice),
 		util.FormatFloat(o.Price),
-		util.FormatFloat(currentPrice),
-		util.FormatFloat(o.GetProfit(currentPrice)) + "%",
+		util.FormatFloat(o.GetCurrentPrice(currentPrice)),
+		util.FormatFloat(o.GetProfit(o.GetCurrentPrice(currentPrice))) + "%",
 	}
 }
 
-func (o Operation) getCurrentUnitPrice() (float64, error) {
+func (o Operation) GetCurrentPrice(currentPrice float64) float64 {
+	return currentPrice * o.Quantity
+}
+
+func (o Operation) getCurrentUnitPrice() float64 {
 	value, err := service.GetAssetPrice(o.Unit)
 	if err != nil {
-		return 0, err
+		log.Printf("Impossible to retrieve operation current value: %s - %s", o.Unit, err.Error())
+		value = 0
 	}
 
-	return value, nil
+	return value
 }
 
 func (o Operation) GetProfit(latestPrice float64) float64 {
