@@ -1,7 +1,9 @@
 package wallet
 
 import (
+	"Vico1993/Wallet/util"
 	"errors"
+	"log"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -21,6 +23,9 @@ type Wallet struct {
 
 	operations 			[]Operation
 	operationsProfit    [][]string
+
+	TotalInvest			float64
+	TotalValue			float64
 }
 
 func NewWallet(o []Operation, t ...string) Wallet {
@@ -28,6 +33,8 @@ func NewWallet(o []Operation, t ...string) Wallet {
 		operations: o,
 		tag: t,
 		units: make(map[string]unitDetail),
+		TotalInvest: float64(0),
+		TotalValue: float64(0),
 	}
 
 	for _, operation := range o {
@@ -67,6 +74,16 @@ func (w *Wallet) handleOperation(o Operation) {
 
 	// Add operations to our Profits constants
 	w.operationsProfit = append(w.operationsProfit, o.WithProfit())
+
+	// Total
+	currentUnitPrice, err := o.getCurrentUnitPrice()
+	if err != nil {
+		log.Printf("Impossible to retrieve operation current value: %s - %s", o.Unit, err.Error())
+		currentUnitPrice = 0
+	}
+
+	w.TotalInvest += o.Price
+	w.TotalValue += currentUnitPrice
 }
 
 func (w *Wallet) AddOperation(ope Operation) {
@@ -92,6 +109,10 @@ func (w Wallet) GetProfitTable() ([]string, [][]string) {
 	return []string{
 		"Unit", "Quantity", "Buy at", "Buy for (CAD)", "Current Price", "Profit",
 	}, w.operationsProfit
+}
+
+func (w Wallet) GetTotalProfit() string {
+	return util.FormatFloat(calculProfit(w.TotalInvest, w.TotalValue))
 }
 
 func (w Wallet) Save() error {

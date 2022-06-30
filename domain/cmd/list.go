@@ -3,6 +3,7 @@ package cmd
 import (
 	"Vico1993/Wallet/domain/builder"
 	"Vico1993/Wallet/domain/wallet"
+	"Vico1993/Wallet/util"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -39,13 +40,13 @@ func listCommand(flags *flags) *cobra.Command {
 				),
 			})
 
-			// markdown.AddData(builder.Data{
-			// 	Block: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3", util.TransformStringSliceIntoInterface([]string{
-			// 			util.FormatFloat(stats.GetTotalInvest()),
-			// 			util.FormatFloat(stats.GetTotalProfit()),
-			// 		}),
-			// 	),
-			// })
+			markdown.AddData(builder.Data{
+				Block: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3", util.TransformStringSliceIntoInterface([]string{
+						util.FormatFloat(w.TotalInvest),
+						w.GetTotalProfit(),
+					}),
+				),
+			})
 
 			err := markdown.Render()
 			if err != nil {
