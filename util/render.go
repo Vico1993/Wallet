@@ -12,6 +12,8 @@ func RenderMarkdown(s string) error {
 	r, _ := glamour.NewTermRenderer(
 		// detect background color and pick either the default dark or light theme
 		glamour.WithAutoStyle(),
+		// wrap output at specific width
+		glamour.WithWordWrap(100),
 	)
 
 	out, err := r.Render(
