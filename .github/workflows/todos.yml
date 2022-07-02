@@ -1,9 +1,6 @@
 name: "Todos"
 
-on:
-    push:
-        branches:
-            - main
+on: push
 
 jobs:
     build:
@@ -19,5 +16,6 @@ jobs:
                   SHA: ${{ github.sha }}
                   REF: ${{ github.ref }}
                   LABEL: "todo"
+                  EXTENDED_LABELS: 1
                   ADD_LIMIT: 0
                   CLOSE_LIMIT: 0

@@ -15,7 +15,7 @@ func TestTextBuildTitle1(t *testing.T) {
 	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, "# blabl", result, "The markdown string is incorrect")
+	assert.Equal(t, result, "# blabl", "The markdown string is incorrect")
 }
 
 func TestTextBuildTitle5(t *testing.T) {
@@ -27,7 +27,7 @@ func TestTextBuildTitle5(t *testing.T) {
 	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, result, "##### blabl", "The markdown string is incorrect")
+	assert.Equal(t, "##### blabl", result, "The markdown string is incorrect")
 }
 
 func TestTextBuildTitle2(t *testing.T) {
@@ -39,7 +39,7 @@ func TestTextBuildTitle2(t *testing.T) {
 	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, result, "## blabl", "The markdown string is incorrect")
+	assert.Equal(t, "## blabl", result, "The markdown string is incorrect")
 }
 
 func TestTextBuildItalic(t *testing.T) {
@@ -51,7 +51,7 @@ func TestTextBuildItalic(t *testing.T) {
 	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, result, "__blabl__", "The markdown string is incorrect")
+	assert.Equal(t, "__blabl__", result, "The markdown string is incorrect")
 }
 
 func TestTextBuildItalicCapitalType(t *testing.T) {
@@ -63,7 +63,7 @@ func TestTextBuildItalicCapitalType(t *testing.T) {
 	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, result, "__blabl__", "The markdown string is incorrect")
+	assert.Equal(t, "__blabl__", result, "The markdown string is incorrect")
 }
 
 func TestTextBuildText(t *testing.T) {
@@ -75,7 +75,7 @@ func TestTextBuildText(t *testing.T) {
 	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, result, "blabl", "The result string should be an empty string")
+	assert.Equal(t, "blabl", result, "The result string should be an empty string")
 }
 
 func TestTextBuildTextWithVariable(t *testing.T) {
@@ -87,5 +87,30 @@ func TestTextBuildTextWithVariable(t *testing.T) {
 	result, err := mkText.Build()
 
 	assert.Nil(t, err)
-	assert.Equal(t, result, "blabl toto", "The result string should be an empty string")
+	assert.Equal(t, "blabl toto", result, "The result string should be an empty string")
+}
+
+func TestTextBuildTextWithVariableNueric(t *testing.T) {
+	mkText := markDownText{
+		cType: "text",
+		data: []interface{}{7},
+		content: "blabl %d",
+	}
+	result, err := mkText.Build()
+
+	assert.Nil(t, err)
+	assert.Equal(t, "blabl 7", result, "The result string should be an empty string")
+}
+
+func TestTextBuildList(t *testing.T) {
+	mkText := markDownText{
+		cType: "list",
+		data: nil,
+		content: "blabl,toto",
+	}
+
+	result, err := mkText.Build()
+
+	assert.Nil(t, err)
+	assert.Equal(t, "- blabl \n- toto \n", result, "The result string should be an empty string")
 }

@@ -1,11 +1,15 @@
-package service
+package cryptocom
 
 import (
-	"Vico1993/Wallet/domain"
+	"Vico1993/Wallet/domain/wallet"
 	"Vico1993/Wallet/util"
-	"os"
+	"log"
+	"strconv"
+
+	"github.com/mitchellh/hashstructure/v2"
 )
 
+// TODO: Clean this file because its TOO MESSY
 const (
 	CRYPTO_PURCHASE = "crypto_purchase"
 	CRYPTO_EXCHANGE = "crypto_exchange"
@@ -30,63 +34,48 @@ type CryptoCom struct {
 	CsvPath string
 }
 
-func NewCryptoCom() Exchange {
+func NewCryptoCom(path string) CryptoCom {
 	return CryptoCom{
-		CsvPath: os.Getenv("CSV_CRYPTO_COM"),
+		CsvPath: path,
 	}
 }
 
-func (c CryptoCom) Load() (domain.Wallet, error) {
+func (c CryptoCom) Load() (wallet.Wallet, error) {
 	csvData, err := c.readCryptoComCSV()
 	if err != nil {
-		return domain.Wallet{}, err
+		return wallet.Wallet{}, err
 	}
 
-	var operations []domain.Operation
+	config := newCryptoComConfig()
+	var operations []wallet.Operation
 	for _, d := range util.ReverseSlice(csvData) {
-		var tpe string
+		rowHash, err := hashstructure.Hash(d, hashstructure.FormatV2, nil)
+		if err != nil {
+			log.Println("Couldn't generate hash for CSV row: ", err.Error())
+			log.Println(d)
+		}
 
-		// Hard code for now
-		from := "CAD"
-		unit := d.Currency
-		quantity := d.Amount
-		fromQuantity := d.NativeAmount
+		// if already in the json, continue
+		if util.IsInStringSlice(strconv.FormatUint(rowHash, 10), config.Operations_hash) {
+			continue
+		} else {
+			config.addHash(strconv.FormatUint(rowHash, 10))
+		}
 
-		switch d.TransactionKind {
-			case CRYPTO_EARN:
-				tpe = domain.EARN
-			case CRYPTO_PURCHASE:
-				tpe = domain.PURCHASE
-			case CRYPTO_EXCHANGE:
-				unit = d.ToCurrency
-				from = d.Currency
-				fromQuantity = d.Amount
-				quantity = d.ToAmount
-				tpe = domain.EXCHANGE
-			default:
-				// If not supported for the moment, skip
-				continue;
+		newOperation := buildOperations(d)
+		if newOperation == nil {
+			continue
 		}
 
 		operations = append(
 			operations,
-			domain.NewOperation(
-				d.Timestamp,
-				quantity,
-				unit,
-				0,
-				from,
-				fromQuantity,
-				d.NativeAmount,
-				"CAD",
-				tpe,
-				"crypto.com",
-				tpe,
-			),
+			*newOperation,
 		)
 	}
 
-	return domain.NewWallet(operations, "Crypto.com"), nil
+	config.save()
+
+	return wallet.NewWallet(operations, "Crypto.com"), nil
 }
 
 func (c CryptoCom) readCryptoComCSV() ([]cryptoCSV, error) {

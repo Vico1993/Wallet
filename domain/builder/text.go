@@ -13,6 +13,7 @@ const (
 	TITLE = "title"
 	ITALIC = "italic"
 	TEXT = "text"
+	LIST = "list"
 	ERROR = "error"
 )
 
@@ -34,6 +35,10 @@ func (t markDownText) parseType() string {
 
 	if (t.cType == "text") {
 		return TEXT
+	}
+
+	if (t.cType == "list") {
+		return LIST
 	}
 
 	return ""
@@ -82,9 +87,18 @@ func (t markDownText) Build() (string, error) {
 		renderString = "__" + t.content + "__"
 	case TEXT:
 		renderString = t.content
+	case LIST:
+		comaMatch := regexp.MustCompile(",")
+		if comaMatch.FindString(t.content) != "" {
+			for _, item := range strings.Split(t.content, ",") {
+				renderString += "- " + item + " \n"
+			}
+		} else {
+			renderString = "- " + t.content
+		}
 	}
 
-	paramMatch := regexp.MustCompile("%s")
+	paramMatch := regexp.MustCompile("%s|%d")
 	if paramMatch.FindString(renderString) != "" && t.data != nil {
 		renderString = fmt.Sprintf(
 			renderString,
@@ -112,5 +126,5 @@ func (t markDownText) Render() error {
 }
 
 func getSupportedType() []string {
-	return []string{"h1", "h2", "h3", "h4", "h5", "h6", "text"}
+	return []string{"h1", "h2", "h3", "h4", "h5", "h6", "text", "list"}
 }
