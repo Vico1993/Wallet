@@ -10,7 +10,6 @@ import (
 )
 
 // TODO: Clean this file because its TOO MESSY
-
 const (
 	CRYPTO_PURCHASE = "crypto_purchase"
 	CRYPTO_EXCHANGE = "crypto_exchange"

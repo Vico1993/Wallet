@@ -5,4 +5,5 @@ type flags struct {
 	addFilePath string
 
 	listGraph bool
+	listByCrypto bool
 }

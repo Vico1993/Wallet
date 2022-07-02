@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
 	"errors"
 	"strings"
@@ -11,9 +12,19 @@ import (
 var v = viper.GetViper()
 
 type unitDetail struct {
-	symbol  string
-	// profit  float64 -- TODO: Implement Profit
-	quantity float64
+	symbol  	string
+	invest 		float64
+	profit  	float64
+	quantity 	float64
+}
+
+func (u unitDetail) GetProfitRow() []string {
+	return []string{
+		u.symbol,
+		util.FormatFloat(u.quantity),
+		util.FormatFloat(u.invest),
+		util.FormatFloat(u.profit),
+	}
 }
 
 type Wallet struct {
@@ -55,11 +66,13 @@ func (w *Wallet) handleOperation(o Operation) {
 
 	if entry, ok := w.units[unit]; ok {
 		entry.quantity += o.Quantity
+		entry.invest += o.Price
 
 		w.units[unit] = entry
 	} else {
 		w.units[unit] = unitDetail{
 			quantity: o.Quantity,
+			invest: o.Price,
 			symbol: unit,
 		}
 	}
@@ -67,6 +80,7 @@ func (w *Wallet) handleOperation(o Operation) {
 	if o.OType == EXCHANGE {
 		w.units[from] = unitDetail{
 			quantity: w.units[from].quantity - o.FromQuantity,
+			invest: w.units[from].invest - o.Price,
 			symbol: w.units[from].symbol,
 		}
 	}
@@ -86,6 +100,20 @@ func (w *Wallet) AddOperation(ope Operation) {
 
 	// Update the unit key
 	w.handleOperation(ope)
+}
+
+func (w *Wallet) GetProfitByUnit() map[string]unitDetail {
+	for unit, unitDetail := range w.units {
+		currentValue, err := service.GetAssetPrice(unitDetail.symbol)
+		if err != nil {
+			continue
+		}
+
+		unitDetail.profit = calculProfit(unitDetail.invest, currentValue * unitDetail.quantity)
+		w.units[unit] = unitDetail
+	}
+
+	return w.units
 }
 
 func (w Wallet) GetQuantityByUnit(unit string) (float64, error) {

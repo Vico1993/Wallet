@@ -40,6 +40,20 @@ func listCommand(flags *flags) *cobra.Command {
 				),
 			})
 
+			if flags.listByCrypto {
+				var data [][]string
+				for _, u := range w.GetProfitByUnit() {
+					data = append(data, u.GetProfitRow())
+				}
+
+				markdown.AddData(builder.Data{
+					Block: builder.NewMarkDowTable(
+						[]string{"Unit", "Quantity", "Invest", "Profit"},
+						data,
+					),
+				})
+			}
+
 			markdown.AddData(builder.Data{
 				Block: builder.NewMarkDowText("You invest in total: %s and your total profit is: %s%%", "h3", util.TransformStringSliceIntoInterface([]string{
 						util.FormatFloat(w.TotalInvest),
@@ -56,6 +70,7 @@ func listCommand(flags *flags) *cobra.Command {
 	}
 
 	listCmd.Flags().BoolVarP(&flags.listGraph, "display-graph", "g", false, "Display the graphique at the end")
+	listCmd.Flags().BoolVarP(&flags.listByCrypto, "by-crypto", "c", false, "Display the profit by crypto")
 
 	return listCmd
 }
