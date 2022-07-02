@@ -32,7 +32,7 @@ func listCommand(flags *flags) *cobra.Command {
 				Block: builder.NewMarkDowText("We found %d operations in your wallet, here is the data:", "text", []interface{}{len(w.GetOperations())}),
 			})
 
-			header, operations := w.GetProfitTable()
+			header, operations := wallet.GetOperationsProfitTableFromWallet(w)
 			markdown.AddData(builder.Data{
 				Block: builder.NewMarkDowTable(
 					header,
@@ -41,15 +41,11 @@ func listCommand(flags *flags) *cobra.Command {
 			})
 
 			if flags.listByCrypto {
-				var data [][]string
-				for _, u := range w.GetProfitByUnit() {
-					data = append(data, u.GetProfitRow())
-				}
-
+				header, rows := wallet.GetUnitProfitTableFromWallet(w)
 				markdown.AddData(builder.Data{
 					Block: builder.NewMarkDowTable(
-						[]string{"Unit", "Quantity", "Invest", "Profit"},
-						data,
+						header,
+						rows,
 					),
 				})
 			}

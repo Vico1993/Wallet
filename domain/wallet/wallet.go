@@ -128,12 +128,6 @@ func (w Wallet) GetOperations() []Operation {
 	return w.operations
 }
 
-func (w Wallet) GetProfitTable() ([]string, [][]string) {
-	return []string{
-		"Unit", "Quantity", "Buy at", "Buy for (CAD)", "Current Price", "Profit",
-	}, w.operationsProfit
-}
-
 func (w Wallet) GetTotalProfit() string {
 	return util.FormatFloat(calculProfit(w.TotalInvest, w.TotalValue))
 }
