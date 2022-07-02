@@ -63,9 +63,14 @@ func (c CryptoCom) Load() (wallet.Wallet, error) {
 			config.addHash(strconv.FormatUint(rowHash, 10))
 		}
 
+		newOperation := buildOperations(d)
+		if newOperation == nil {
+			continue
+		}
+
 		operations = append(
 			operations,
-			*buildOperations(d),
+			*newOperation,
 		)
 	}
 
