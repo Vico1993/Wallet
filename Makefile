@@ -8,7 +8,7 @@ build:
 	@ echo "Build done 🛠"
 
 test:
-	go test -v ./...
+	DEBUG=1 go test -v ./...
 
 lint:
 	@ golangci-lint run ./... -v
