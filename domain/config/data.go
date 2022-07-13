@@ -11,14 +11,6 @@ var v = viper.GetViper()
 
 // Save Array of Operations with what we have in data.json
 func SaveOperations(operations ...wallet.Operation) {
-	// v.Set(
-	// 	"operations",
-	// 	append(
-	// 		operations,
-	// 		LoadOperations()...
-	// 	),
-	// )
-
 	// For now just erase what we have.
 	v.Set("operations", operations)
 
