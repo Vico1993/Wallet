@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -144,7 +145,7 @@ func TestGetTotalForUnitWithUnitButExchangeLater(t *testing.T) {
 	resultBTC, err := newWallet.GetQuantityByUnit("BTC")
 
 	assert.Nil(t, err)
-	assert.Equal( t, 0.05, resultBTC )
+	assert.Equal( t, 0.15000000000000002, resultBTC )
 }
 
 func TestGetTotalForUnitWithUnitButExchangeItLater(t *testing.T) {
@@ -167,7 +168,7 @@ func TestGetTotalForUnitWithUnitButExchangeItLater(t *testing.T) {
 			"ETH",
 			0,
 			"BTC",
-			0.1,
+			-0.1,
 			100.0,
 			"CAD",
 			EXCHANGE,
@@ -182,7 +183,7 @@ func TestGetTotalForUnitWithUnitButExchangeItLater(t *testing.T) {
 
 	resultBTC, err := newWallet.GetQuantityByUnit("BTC")
 
-	assert.Nil(t, err)
+	assert.Error(t, errors.New("Unit not found in the wallet"), err)
 	assert.Equal( t, float64(0), resultBTC )
 }
 

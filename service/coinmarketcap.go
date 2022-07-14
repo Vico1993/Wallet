@@ -14,13 +14,14 @@ var (
 func GetAssetPrice(asset string) (float64, error) {
 	// To avoid hitting CMC during development
 	if os.Getenv("DEBUG") == "1" {
-		prices["BTC"] = 50000.19
-		prices["ETH"] = 500.19
-		prices["VET"] = 0.19
-		prices["DOGE"] = 0.1
+		prices["BTC"] = 26325.07
+		prices["ETH"] = 1447.83
+		prices["VET"] = 0.02879
+		prices["DOGE"] = 0.07984
 		prices["BUSD"] = 1
-		prices["MANA"] = 0.4
-		prices["EGLD"] = 100
+		prices["MANA"] = 1.05
+		prices["EGLD"] = 68.06
+		prices["ERD"] = 0
 	}
 
 	if val, ok := prices[asset]; ok {

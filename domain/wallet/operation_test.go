@@ -42,7 +42,7 @@ func TestWithProfitOutput(t *testing.T) {
 		"0.1",
 		"100",
 		"10",
-		"5000.01",
-		"49900.19%",
+		"2632.5",
+		"26225.07%",
 	}, operation.WithProfit())
 }
