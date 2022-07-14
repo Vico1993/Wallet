@@ -13,16 +13,16 @@ Also an excuse to try: [lipgloss](https://github.com/charmbracelet/lipgloss) and
 git clone git@github.com:Vico1993/Wallet.git
 ```
 
-2. Copy the `data_example.json` into `data.json`
+2. Add your asset with Crypto.com csv
 
 ```shell
-cp data_example.json data.json
+make build && ./wallet add -p=<PATH_TO_MY_CSV>
 ```
 
-3. Run the script
+3. List your asset and Enjoy
 
 ```shell
-make run
+make build && ./wallet add -p=<PATH_TO_MY_CSV>
 ```
 
 ## Testing
