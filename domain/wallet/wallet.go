@@ -4,6 +4,7 @@ import (
 	"Vico1993/Wallet/service"
 	"Vico1993/Wallet/util"
 	"errors"
+	"sort"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -46,6 +47,9 @@ func NewWallet(o []Operation, t ...string) Wallet {
 		TotalInvest: float64(0),
 		TotalValue: float64(0),
 	}
+
+	// Sort by date
+	wallet.sortOperations()
 
 	for _, operation := range o {
 		// Handle each operation one by one
@@ -97,6 +101,9 @@ func (w *Wallet) handleOperation(o Operation) {
 
 func (w *Wallet) AddOperation(ope Operation) {
 	w.operations = append(w.operations, ope)
+
+	// Sort by date
+	w.sortOperations()
 
 	// Update the unit key
 	w.handleOperation(ope)
@@ -159,4 +166,10 @@ func (w Wallet) Save() error {
 	}
 
 	return nil
+}
+
+func (w *Wallet) sortOperations() {
+	sort.Slice(w.operations[:], func(i, j int) bool {
+		return w.operations[i].Date < w.operations[j].Date
+	})
 }

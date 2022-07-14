@@ -44,6 +44,59 @@ func TestGetTotalForUnitWithOnlyPurchase(t *testing.T) {
 	)
 }
 
+func TestOrderingByDate(t *testing.T) {
+	var wallet = NewWallet([]Operation{
+		NewOperation(
+			"2022-06-25",
+			0.1,
+			"BTC",
+			0,
+			"fiat",
+			10.0,
+			10.0,
+			"CAD",
+			PURCHASE,
+			"test",
+		),
+		NewOperation(
+			"2022-06-15",
+			0.1,
+			"BTC",
+			0,
+			"fiat",
+			10.0,
+			10.0,
+			"CAD",
+			PURCHASE,
+			"test",
+		),
+	}, "test")
+
+	operations := wallet.GetOperations()
+
+	assert.Equal(t, 2, len(operations))
+	assert.Equal(t, "2022-06-15", operations[0].Date)
+	assert.Equal(t, "2022-06-25", operations[1].Date)
+
+	wallet.AddOperation(NewOperation(
+		"2022-06-01",
+		0.1,
+		"BTC",
+		0,
+		"fiat",
+		10.0,
+		10.0,
+		"CAD",
+		PURCHASE,
+		"test",
+	))
+	operations = wallet.GetOperations()
+
+	assert.Equal(t, 3, len(operations))
+	assert.Equal(t, "2022-06-01", operations[0].Date)
+	assert.Equal(t, "2022-06-25", operations[2].Date)
+}
+
 func TestGetTotalForUnitWithNoUnitRequested(t *testing.T) {
 	result, err := wallet.GetQuantityByUnit("EGLD")
 
