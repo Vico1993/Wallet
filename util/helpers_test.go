@@ -28,3 +28,16 @@ func TestIsInStringSliceIn(t *testing.T) {
 	result := IsInStringSlice("in", []string{"test", "word", "not", "in"})
 	assert.Equal(t, true, result)
 }
+
+func TestRemoveKeyFromSlice(t *testing.T) {
+	result := RemoveKeyFromSlice([]string{"test", "super", "toto"}, 1)
+	assert.Equal(t, 2, len(result))
+	assert.Equal(t, []string{"test", "toto"}, result)
+}
+
+func TestRemoveKeyFromSliceLastKey(t *testing.T) {
+	result := RemoveKeyFromSlice([]string{"test", "super", "toto"}, 2)
+
+	assert.Equal(t, 2, len(result))
+	assert.Equal(t, []string{"test", "super"}, result)
+}

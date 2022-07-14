@@ -5,6 +5,7 @@ import (
 	"Vico1993/Wallet/domain/wallet"
 	"Vico1993/Wallet/util"
 	"log"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,7 +19,7 @@ func listCommand(flags *flags) *cobra.Command {
 		Short: "List all your operations",
 		Long: "Will list all your operations in your wallet with some analytics",
 		Run: func(cmd *cobra.Command, args []string) {
-			w := loadWallet()
+			w := loadWallet(strings.ToUpper(flags.filterByUnit))
 
 			if len(w.GetOperations()) == 0 {
 				markdown.AddData(builder.Data{
@@ -67,16 +68,29 @@ func listCommand(flags *flags) *cobra.Command {
 
 	listCmd.Flags().BoolVarP(&flags.listGraph, "display-graph", "g", false, "Display the graphique at the end")
 	listCmd.Flags().BoolVarP(&flags.listByCrypto, "by-crypto", "c", false, "Display the profit by crypto")
+	listCmd.Flags().StringVarP(&flags.filterByUnit, "filter-by-unit", "u", "", "Filter all the list with one unit")
 
 	return listCmd
 }
 
-func loadWallet() wallet.Wallet {
+func loadWallet(unit string) wallet.Wallet {
+	var data []wallet.Operation
 	var operations []wallet.Operation
 
-	err := v.UnmarshalKey("operations", &operations)
+	err := v.UnmarshalKey("operations", &data)
 	if err != nil {
 		log.Fatalln("Error loading operations: ", err.Error())
+	}
+
+	// Filtering for one UNIT
+	if unit != "" {
+		for _, operation := range data {
+			if operation.Unit == unit || operation.From == unit {
+				operations = append(operations, operation)
+			}
+		}
+	} else {
+		operations = data
 	}
 
 	return wallet.NewWallet(operations)

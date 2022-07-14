@@ -54,3 +54,9 @@ func ReverseSlice[S ~[]E, E any](s S) S {
 
 	return s
 }
+
+func RemoveKeyFromSlice[E any](data []E, index int) []E {
+	// return append(data[:index], data[index+1:]...)
+	data[index] = data[len(data)-1]
+    return data[:len(data)-1]
+}

@@ -6,4 +6,5 @@ type flags struct {
 
 	listGraph bool
 	listByCrypto bool
+	filterByUnit string
 }
