@@ -22,7 +22,7 @@ make build && ./wallet add -p=<PATH_TO_MY_CSV>
 3. List your asset and Enjoy
 
 ```shell
-make build && ./wallet add -p=<PATH_TO_MY_CSV>
+make build && ./wallet list -c -u=BTC
 ```
 
 ## Testing
