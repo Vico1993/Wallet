@@ -12,6 +12,5 @@ func GetUnitProfitTableFromWallet(w Wallet) ([]string, [][]string) {
 		data = append(data, u.GetProfitRow())
 	}
 
-
 	return []string{"Unit", "Quantity", "Invest", "Profit"}, data
 }

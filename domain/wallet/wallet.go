@@ -81,7 +81,7 @@ func (w *Wallet) handleOperation(o Operation) {
 		}
 	}
 
-	if o.OType == EXCHANGE {
+	if _, ok := w.units[from]; ok && o.OType == EXCHANGE {
 		w.units[from] = unitDetail{
 			quantity: w.units[from].quantity + o.FromQuantity,
 			invest: w.units[from].invest - o.Price,

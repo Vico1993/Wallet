@@ -18,7 +18,7 @@ func GetAssetPrice(asset string) (float64, error) {
 		prices["ETH"] = 1447.83
 		prices["VET"] = 0.02879
 		prices["DOGE"] = 0.07984
-		prices["BUSD"] = 1
+		prices["BUSD"] = 1.25
 		prices["MANA"] = 1.05
 		prices["EGLD"] = 68.06
 		prices["ERD"] = 0
