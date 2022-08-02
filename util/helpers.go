@@ -34,6 +34,7 @@ func TransformStringSliceIntoInterface(list []string) []interface{} {
 	return vals
 }
 
+// TODO: Find a way to test fatal exception
 func TransformStringToFloat(str string) float64 {
 	if str == "" {
 		return 0
@@ -56,7 +57,6 @@ func ReverseSlice[S ~[]E, E any](s S) S {
 }
 
 func RemoveKeyFromSlice[E any](data []E, index int) []E {
-	// return append(data[:index], data[index+1:]...)
 	data[index] = data[len(data)-1]
     return data[:len(data)-1]
 }
