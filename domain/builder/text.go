@@ -1,7 +1,6 @@
 package builder
 
 import (
-	"Vico1993/Wallet/util"
 	"errors"
 	"fmt"
 	"regexp"
@@ -122,7 +121,7 @@ func (t markDownText) Render() error {
 		return err
 	}
 
-	return util.RenderMarkdown(renderString)
+	return renderMarkdown(renderString)
 }
 
 func getSupportedType() []string {

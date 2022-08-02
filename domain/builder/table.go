@@ -1,7 +1,6 @@
 package builder
 
 import (
-	"Vico1993/Wallet/util"
 	"errors"
 	"strings"
 )
@@ -45,5 +44,5 @@ func (t markDownTable) Render() error {
 		return errors.New("Please add at least one element in your header and your Rows")
 	}
 
-	return util.RenderMarkdown(t.Build())
+	return renderMarkdown(t.Build())
 }

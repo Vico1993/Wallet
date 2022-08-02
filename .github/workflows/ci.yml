@@ -21,6 +21,7 @@ jobs:
         env:
             GOFLAGS: -mod=readonly
             DEBUG: 1
+            TEST: 1
 
         steps:
             - name: Set up Go
@@ -82,6 +83,8 @@ jobs:
         env:
             GO111MODULE: "on"
             DEBUG: 1
+            TEST: 1
+
         steps:
             - name: Install Go
               uses: actions/setup-go@v2

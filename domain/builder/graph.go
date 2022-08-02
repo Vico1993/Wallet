@@ -2,6 +2,7 @@ package builder
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/guptarohit/asciigraph"
 )
@@ -19,12 +20,15 @@ func NewGraph(opts []asciigraph.Option, data ...[]float64) MarkDownBuilder {
 }
 
 func (g graph) Render() error {
-	fmt.Println(
-		asciigraph.PlotMany(
-			g.data,
-			g.options...,
-		),
-	)
+	// Don't print anything in TEST MODE
+	if (os.Getenv("TEST") != "1") {
+		fmt.Println(
+			asciigraph.PlotMany(
+				g.data,
+				g.options...,
+			),
+		)
+	}
 
 	return nil
 }

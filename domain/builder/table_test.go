@@ -8,8 +8,21 @@ import (
 
 func TestTableRenderNoRow(t *testing.T) {
 	tableMkd := NewMarkDowTable(
-		[]string{},
+		[]string{"Head1", "Heade2"},
 		[][]string{},
+	)
+
+	err := tableMkd.Render()
+
+	assert.EqualError(t, err, "Please add at least one element in your header and your Rows", "Error doesn't match the expected")
+}
+
+func TestTableRenderNoHeader(t *testing.T) {
+	tableMkd := NewMarkDowTable(
+		[]string{},
+		[][]string{
+			{"col1", "col2"},
+		},
 	)
 
 	err := tableMkd.Render()
